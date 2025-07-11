@@ -1,6 +1,6 @@
 export const Movies = [
   {
-    name: 'Army Of  The Dead',
+    name: 'Army Of The Dead',
     desc: 'Lorem ipsum dolor sit amet, consecetur adipiscing elseddo eiusmod There are many variations of passages of lorem Ipsum available, but the majority have suffered alteration.',
     titleImage: '1a.jpg',
     image: '1.jpg',
@@ -8,7 +8,7 @@ export const Movies = [
     language: 'English',
     year: '2022',
     time: '3hr',
-    video: '',
+    video: 'https://www.youtube.com/watch?v=H83kjG5RCT8',
     rate: 3.4,
     reviews: 23,
   },
