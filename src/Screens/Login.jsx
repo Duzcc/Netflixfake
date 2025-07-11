@@ -4,11 +4,10 @@ import { Input } from "../Components/UsedInputs";
 import Layout from "../Layout/Layout";
 import { FiLogIn } from "react-icons/fi";
 
-// Giả lập tài khoản hợp lệ (có thể dùng localStorage thực tế ở bước sau)
-const fakeUser = {
-  email: "netflixo@gmail.com",
-  password: "123456",
-};
+// const fakeUser = {
+//   email: "netflixo@gmail.com",
+//   password: "123456",
+// };
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -26,7 +25,6 @@ function Login() {
   const handleLogin = (e) => {
     e.preventDefault();
 
-    // Có thể lấy dữ liệu từ localStorage để kiểm tra
     const registeredUser = JSON.parse(localStorage.getItem("registeredUser"));
 
     const isValid =
@@ -38,7 +36,7 @@ function Login() {
     if (isValid) {
       localStorage.setItem("user", JSON.stringify({ email }));
       alert("Đăng nhập thành công!");
-      navigate("/"); // 👉 CHUYỂN VỀ TRANG CHỦ
+      navigate("/");
     } else {
       alert("Email hoặc mật khẩu không đúng!");
     }
