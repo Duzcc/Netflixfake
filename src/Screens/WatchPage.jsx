@@ -9,6 +9,8 @@ function WatchPage() {
   let { id } = useParams();
   const movie = Movies.find((movie) => movie.name === id);
   const [play, setPlay] = useState(false);
+
+  console.log(movie);
   return (
     <Layout>
       <div className="container mx-auto bg-dry p-6 mb-12">
@@ -30,14 +32,18 @@ function WatchPage() {
         </div>
 
         {/* watch video */}
-        {play ? (
-          <video controls autoPlay={play} className="w-full h-full rounded">
-            <source
-              src="/images/movie.mp4"
-              type="video/mp4"
-              title={movie?.name}
-            />
-          </video>
+          <iframe
+            src={movie?.video}
+            title={movie?.name}
+            width="100%"
+            height="500"
+            frameBorder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            className="w-full h-[500px] rounded"
+            
+          />
+{/* 
         ) : (
           <div className="w-full h-screen rounded-lg overflow-hidden relative">
             <div className="absolute top-0 left-0 bottom-0 right-0 bg-main bg-opacity-30 flex-colo">
@@ -58,7 +64,7 @@ function WatchPage() {
               className="w-full h-full object-cover rounded-lg"
             />
           </div>
-        )}
+        )} */}
       </div>
     </Layout>
   );
