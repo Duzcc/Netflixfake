@@ -21,3 +21,4 @@ function FlexMovieItems({ movie }) {
 }
 
 export default FlexMovieItems;
+
