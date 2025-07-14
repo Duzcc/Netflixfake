@@ -4,10 +4,12 @@ import { Input } from "../Components/UsedInputs";
 import Layout from "../Layout/Layout";
 import { FiLogIn } from "react-icons/fi";
 
-// const fakeUser = {
-//   email: "netflixo@gmail.com",
-//   password: "123456",
-// };
+const fakeUser = {
+  email: "netflixo@gmail.com",
+  password: "123456",
+  name: "Admin Demo",
+  role: "admin"
+};
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -15,7 +17,6 @@ function Login() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Hiển thị thông báo khi vừa đăng ký
   useEffect(() => {
     if (location.state?.registered) {
       alert("Đăng ký thành công! Vui lòng đăng nhập.");
@@ -26,15 +27,27 @@ function Login() {
     e.preventDefault();
 
     const registeredUser = JSON.parse(localStorage.getItem("registeredUser"));
+    let userData = null;
 
-    const isValid =
-      (registeredUser &&
-        email === registeredUser.email &&
-        password === registeredUser.password) ||
-      (email === fakeUser.email && password === fakeUser.password);
+    if (
+      registeredUser &&
+      email === registeredUser.email &&
+      password === registeredUser.password
+    ) {
+      userData = {
+        ...registeredUser,
+        loginAt: new Date().toISOString(),
+        role: registeredUser.role || "user"
+      };
+    } else if (email === fakeUser.email && password === fakeUser.password) {
+      userData = {
+        ...fakeUser,
+        loginAt: new Date().toISOString()
+      };
+    }
 
-    if (isValid) {
-      localStorage.setItem("user", JSON.stringify({ email }));
+    if (userData) {
+      localStorage.setItem("user", JSON.stringify(userData));
       alert("Đăng nhập thành công!");
       navigate("/");
     } else {

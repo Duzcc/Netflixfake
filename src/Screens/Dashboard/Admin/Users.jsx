@@ -1,15 +1,22 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Table2 from "../../../Components/Table2";
 import SideBar from "../SideBar";
-import { UsersData } from "../../../Data/MovieData";
 
 function Users() {
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("registeredUser"));
+    if (storedUser) {
+      setUsers([storedUser]);
+    }
+  }, []);
+
   return (
     <SideBar>
       <div className="flex flex-col gap-6">
         <h2 className="text-xl font-bold">Users</h2>
-
-        <Table2 data={UsersData} users={true} />
+        <Table2 data={users} users={true} />
       </div>
     </SideBar>
   );
