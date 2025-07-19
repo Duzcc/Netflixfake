@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-const API_KEY = "30b47161062a3e6b81f7060289df3481"; // hoặc lấy từ .env
+const API_KEY = "30b47161062a3e6b81f7060289df3481";
 
 export default function PopularMovies() {
   const [movies, setMovies] = useState([]);
