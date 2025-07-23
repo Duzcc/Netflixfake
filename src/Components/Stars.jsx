@@ -1,55 +1,24 @@
 import React from 'react';
 import { FaRegStar, FaStar, FaStarHalfAlt } from 'react-icons/fa';
 
-function Rating({ value }) {
+function Rating({ value, text, color = "#facc15" }) {
+  const stars = [1, 2, 3, 4, 5];
+
   return (
-    <>
-      <span>
-        {value >= 1 ? (
-          <FaStar />
-        ) : value >= 0.5 ? (
-          <FaStarHalfAlt />
-        ) : (
-          <FaRegStar />
-        )}
-      </span>
-      <span>
-        {value >= 2 ? (
-          <FaStar />
-        ) : value >= 1.5 ? (
-          <FaStarHalfAlt />
-        ) : (
-          <FaRegStar />
-        )}
-      </span>
-      <span>
-        {value >= 3 ? (
-          <FaStar />
-        ) : value >= 2.5 ? (
-          <FaStarHalfAlt />
-        ) : (
-          <FaRegStar />
-        )}
-      </span>
-      <span>
-        {value >= 4 ? (
-          <FaStar />
-        ) : value >= 3.5 ? (
-          <FaStarHalfAlt />
-        ) : (
-          <FaRegStar />
-        )}
-      </span>
-      <span>
-        {value >= 5 ? (
-          <FaStar />
-        ) : value >= 4.5 ? (
-          <FaStarHalfAlt />
-        ) : (
-          <FaRegStar />
-        )}
-      </span>
-    </>
+    <div className="flex items-center gap-1 text-sm">
+      {stars.map((star) => (
+        <span key={star} className="text-yellow-400">
+          {value >= star ? (
+            <FaStar color={color} />
+          ) : value >= star - 0.5 ? (
+            <FaStarHalfAlt color={color} />
+          ) : (
+            <FaRegStar color={color} />
+          )}
+        </span>
+      ))}
+      {text && <span className="ml-2 text-xs text-white">{text}</span>}
+    </div>
   );
 }
 

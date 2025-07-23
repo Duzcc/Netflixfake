@@ -18,53 +18,56 @@ import {
 import { MdEmail } from "react-icons/md";
 
 function ShareMovieModal({ modalOpen, setModalOpen, movie }) {
+  const shareUrl = movie
+    ? `${window.location.protocol}//${window.location.host}/movie/${movie.name}`
+    : window.location.href;
+
   const shareData = [
     {
-      icon: FaFacebook,
-      shareButton: FacebookShareButton,
+      icon: <FaFacebook />,
+      Button: FacebookShareButton,
     },
     {
-      icon: FaTwitter,
-      shareButton: TwitterShareButton,
+      icon: <FaTwitter />,
+      Button: TwitterShareButton,
     },
     {
-      icon: FaTelegram,
-      shareButton: TelegramShareButton,
+      icon: <FaTelegram />,
+      Button: TelegramShareButton,
     },
     {
-      icon: FaWhatsapp,
-      shareButton: WhatsappShareButton,
+      icon: <FaWhatsapp />,
+      Button: WhatsappShareButton,
     },
     {
-      icon: FaPinterest,
-      shareButton: PinterestShareButton,
+      icon: <FaPinterest />,
+      Button: PinterestShareButton,
     },
     {
-      icon: MdEmail,
-      shareButton: EmailShareButton,
+      icon: <MdEmail />,
+      Button: EmailShareButton,
     },
   ];
 
-  const url = `${window.location.protocol}//${window.location.host}/movie/${movie.name}`;
   return (
     <MainModal modalOpen={modalOpen} setModalOpen={setModalOpen}>
       <div className="inline-block sm:w-4/5 border border-border md:w-3/5 lg:w-2/5 w-full align-middle p-10 overflow-y-auto h-full bg-main text-white rounded-2xl">
         <h2 className="text-2xl">
           Share <span className="text-xl font-bold">"{movie?.name}"</span>
         </h2>
-        <form className="flex-rows flex-wrap gap-6 mt-6">
-          {shareData.map((data, index) => (
-            <data.shareButton
+        <div className="flex flex-wrap items-center gap-6 mt-6">
+          {shareData.map(({ Button, icon }, index) => (
+            <Button
               key={index}
-              url={url}
+              url={shareUrl}
               quote="Netflixo | Free Movies Site"
             >
-              <div className="w-12 transitions hover:bg-subMain flex-colo text-lg h-12 bg-white rounded bg-opacity-30">
-                <data.icon />
+              <div className="w-12 h-12 flex items-center justify-center rounded bg-white bg-opacity-30 text-lg hover:bg-subMain transition">
+                {icon}
               </div>
-            </data.shareButton>
+            </Button>
           ))}
-        </form>
+        </div>
       </div>
     </MainModal>
   );

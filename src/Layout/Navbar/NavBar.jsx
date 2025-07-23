@@ -1,11 +1,26 @@
-import React from "react";
-import { Link, NavLink } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { FaSearch, FaHeart } from "react-icons/fa";
 import { CgUser } from "react-icons/cg";
+import { searchMovies } from "../../Data/movieAPI";
 
 function NavBar() {
   const hover = "hover:text-subMain transitions text-white";
   const Hover = ({ isActive }) => (isActive ? "text-subMain" : hover);
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate();
+
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    if (searchTerm.trim()) {
+      // Gọi API TMDB nếu bạn muốn xử lý kết quả tại đây
+      // const results = await searchMovies(searchTerm); 
+      navigate(`/movies?query=${encodeURIComponent(searchTerm.trim())}`);
+      setSearchTerm("");
+    }
+  };
+
   return (
     <>
       <div className="bg-main shadow-md sticky top-0 z-20">
@@ -20,9 +35,13 @@ function NavBar() {
               />
             </Link>
           </div>
+
           {/* search Form */}
           <div className="col-span-3">
-            <form className="w-full text-sm bg-dryGray rounded flex-btn gap-4">
+            <form
+              onSubmit={handleSearch}
+              className="w-full text-sm bg-dryGray rounded flex-btn gap-4"
+            >
               <button
                 type="submit"
                 className="bg-subMain w-12 flex-colo h-12 rounded text-white"
@@ -32,10 +51,13 @@ function NavBar() {
               <input
                 type="text"
                 placeholder="Search Movie Name from here"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 className="font-medium placeholder:text-border text-sm w-11/12 h-12 bg-transparent border-none px-2 text-black"
               />
             </form>
           </div>
+
           {/* menus */}
           <div className="col-span-3 font-medium text-sm hidden xl:gap-14 2xl:gap-20 justify-between lg:flex xl:justify-end items-center">
             <NavLink to="/movies" className={Hover}>

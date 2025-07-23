@@ -17,6 +17,14 @@ function Login() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Nếu đã đăng nhập thì chuyển hướng
+  useEffect(() => {
+    const existingUser = localStorage.getItem("user");
+    if (existingUser) {
+      navigate("/");
+    }
+  }, [navigate]);
+
   useEffect(() => {
     if (location.state?.registered) {
       alert("Đăng ký thành công! Vui lòng đăng nhập.");
@@ -90,7 +98,7 @@ function Login() {
             <FiLogIn /> Sign In
           </button>
           <p className="text-center text-border">
-            Don't have an account?{" "}
+            Don't have an account?
             <Link to="/register" className="text-dryGray font-semibold ml-2">
               Sign Up
             </Link>

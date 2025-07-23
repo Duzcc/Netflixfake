@@ -2,21 +2,39 @@ import React, { useEffect, useState } from "react";
 import { HiPlusCircle } from "react-icons/hi";
 import Table2 from "../../../Components/Table2";
 import SideBar from "../SideBar";
-import { CategoriesData } from "../../../Data/CategoriesData";
 import CategoryModal from "../../../Components/Modals/CategoryModal";
+
+// Giả sử bạn có API riêng để lấy category
+const API_URL = "https://your-api.com/api/categories"; // Thay bằng API thực tế
 
 function Categories() {
   const [modalOpen, setModalOpen] = useState(false);
-  const [category, setCategory] = useState();
+  const [category, setCategory] = useState(null);
+  const [categories, setCategories] = useState([]);
 
-  const OnEditFunction = (id) => {
-    setCategory(id);
-    setModalOpen(!modalOpen);
+  const fetchCategories = async () => {
+    try {
+      const res = await fetch(API_URL);
+      const data = await res.json();
+      setCategories(data);
+    } catch (err) {
+      console.error("Error fetching categories:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const OnEditFunction = (category) => {
+    setCategory(category);
+    setModalOpen(true);
   };
 
   useEffect(() => {
     if (modalOpen === false) {
-      setCategory();
+      setCategory(null);
+      fetchCategories(); // Làm mới danh sách sau khi thêm/sửa
     }
   }, [modalOpen]);
 
@@ -39,7 +57,7 @@ function Categories() {
         </div>
 
         <Table2
-          data={CategoriesData}
+          data={categories}
           users={false}
           OnEditFunction={OnEditFunction}
         />

@@ -5,105 +5,73 @@ import { MdDelete } from "react-icons/md";
 const Head = "text-xs text-left text-main font-semibold px-6 py-2 uppercase";
 const Text = "text-sm text-left leading-6 whitespace-nowrap px-5 py-3";
 
-// rows
-const Rows = (data, i, users, OnEditFunction) => {
+const Rows = (item, index, isUserTable, onEdit) => {
   return (
-    <tr key={i}>
-      {/* users */}
-      {users ? (
+    <tr key={index}>
+      {isUserTable ? (
         <>
-          <td className={`${Text}`}>
-            <div className="w-12 p-1 bg-dry border border-border h-12 rounded overflow-hidden">
+          <td className={Text}>
+            <div className="w-12 h-12 p-1 bg-dry border border-border rounded overflow-hidden">
               <img
-                className="h-full w-full object-cover"
-                src={`/images/${data.image ? data.image : "user.png"}`}
-                alt={data?.fullName}
+                className="w-full h-full object-cover"
+                src={item.image || "/images/user.png"}
+                alt={item.fullName || "User"}
               />
             </div>
           </td>
-          <td className={`${Text}`}>{data._id ? data._id : "2R75T8"}</td>
-          <td className={`${Text}`}>
-            {data.createAt ? data.createAt : "12, Jan 2023"}
-          </td>
-          <td className={`${Text}`}>{data.fullName}</td>
-          <td className={`${Text}`}>{data.email}</td>
-          <td className={`${Text} float-right flex-rows gap-2`}>
-            <button className="bg-subMain text-white rounded flex-colo w-6 h-6">
-              <MdDelete />
-            </button>
-          </td>
+          <td className={Text}>{item._id || "N/A"}</td>
+          <td className={Text}>{item.createdAt?.slice(0, 10) || "N/A"}</td>
+          <td className={Text}>{item.fullName}</td>
+          <td className={Text}>{item.email}</td>
         </>
       ) : (
-        // Categories
         <>
-          <td className={`${Text} font-bold`}>2R75T8</td>
-          <td className={`${Text}`}>
-            {data.createAt ? data.createAt : "12, Jan 2023"}
-          </td>
-          <td className={`${Text}`}>{data.title}</td>
-          <td className={`${Text} float-right flex-rows gap-2`}>
-            <button
-              onClick={() => OnEditFunction(data)}
-              className="border border-border bg-dry flex-rows gap-2 text-border rounded py-1 px-2"
-            >
-              Edit <FaEdit className="text-green-500" />
-            </button>
-            <button className="bg-subMain text-white rounded flex-colo w-6 h-6">
-              <MdDelete />
-            </button>
-          </td>
+          <td className={`${Text} font-bold`}>{item.id || item._id || "N/A"}</td>
+          <td className={Text}>{item.release_date || item.createdAt?.slice(0, 10) || "N/A"}</td>
+          <td className={Text}>{item.title || "Untitled"}</td>
         </>
       )}
+      <td className={`${Text} float-right flex gap-2 items-center`}>
+        <button
+          onClick={() => onEdit(item)}
+          className="border border-border bg-dry text-border rounded px-2 py-1 flex items-center gap-1"
+        >
+          Edit <FaEdit className="text-green-500" />
+        </button>
+        <button className="bg-subMain text-white rounded w-6 h-6 flex items-center justify-center">
+          <MdDelete />
+        </button>
+      </td>
     </tr>
   );
 };
 
-// table
-function Table2({ data, users, OnEditFunction }) {
+function Table2({ data = [], users = false, onEdit = () => {} }) {
   return (
-    <div className="overflow-x-scroll overflow-hidden relative w-full">
+    <div className="overflow-x-auto w-full">
       <table className="w-full table-auto border border-border divide-y divide-border">
-        <thead>
-          <tr className="bg-dryGray">
+        <thead className="bg-dryGray">
+          <tr>
             {users ? (
               <>
-                <th scope="col" className={`${Head}`}>
-                  Image
-                </th>
-                <th scope="col" className={`${Head}`}>
-                  Id
-                </th>
-                <th scope="col" className={`${Head}`}>
-                  Date
-                </th>
-                <th scope="col" className={`${Head}`}>
-                  Full Name
-                </th>
-                <th scope="col" className={`${Head}`}>
-                  Email
-                </th>
+                <th className={Head}>Image</th>
+                <th className={Head}>ID</th>
+                <th className={Head}>Date</th>
+                <th className={Head}>Full Name</th>
+                <th className={Head}>Email</th>
               </>
             ) : (
               <>
-                <th scope="col" className={`${Head}`}>
-                  Id
-                </th>
-                <th scope="col" className={`${Head}`}>
-                  Date
-                </th>
-                <th scope="col" className={`${Head}`}>
-                  Title
-                </th>
+                <th className={Head}>ID</th>
+                <th className={Head}>Date</th>
+                <th className={Head}>Title</th>
               </>
             )}
-
-            <th scope="col" className={`${Head} text-end`}>
-              Actions
-            </th>
+            <th className={`${Head} text-end`}>Actions</th>
           </tr>
         </thead>
-        <tbody className="bg-main divide-y divide-gray-800">
-          {data.map((data, i) => Rows(data, i, users, OnEditFunction))}
+        <tbody className="bg-main divide-y divide-border">
+          {data.map((item, i) => Rows(item, i, users, onEdit))}
         </tbody>
       </table>
     </div>

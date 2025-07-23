@@ -5,6 +5,9 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { UsersData } from "../../Data/MovieData";
 import Titles from "../Titles";
 
+// Import styles nếu chưa có
+import "swiper/css";
+
 function MovieCasts() {
   return (
     <div className="my-12">
@@ -12,41 +15,40 @@ function MovieCasts() {
       <div className="mt-10">
         <Swiper
           autoplay={{
-            delay: 1000,
+            delay: 2500,
             disableOnInteraction: false,
           }}
           loop={true}
           speed={1000}
           modules={[Autoplay]}
-          spaceBetween={10}
+          spaceBetween={20}
           breakpoints={{
             0: {
-              slidesPerView: 1,
-            },
-            400: {
               slidesPerView: 2,
             },
-            768: {
+            480: {
               slidesPerView: 3,
             },
-            1024: {
+            768: {
               slidesPerView: 4,
             },
-            1280: {
+            1024: {
               slidesPerView: 5,
-              spaceBetween: 30,
+            },
+            1280: {
+              slidesPerView: 6,
             },
           }}
         >
           {UsersData.map((user, i) => (
             <SwiperSlide key={i}>
-              <div className="w-full p-3 italic text-xs text-text rounded flex-colo bg-dry border border-gray-800">
+              <div className="w-full p-3 text-center italic text-xs text-text rounded flex-colo bg-dry border border-border hover:scale-105 transition duration-300">
                 <img
                   src={`/images/${user.image}`}
                   alt={user.fullName}
                   className="w-full h-64 object-cover rounded mb-4"
                 />
-                <p>{user?.fullName}</p>
+                <p className="text-sm font-medium">{user?.fullName}</p>
               </div>
             </SwiperSlide>
           ))}

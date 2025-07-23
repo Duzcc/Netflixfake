@@ -1,34 +1,70 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FaRegListAlt, FaUser } from "react-icons/fa";
-import SideBar from "../SideBar";
 import { HiViewGridAdd } from "react-icons/hi";
+import SideBar from "../SideBar";
 import Table from "../../../Components/Table";
-import { Movies } from "../../../Data/MovieData";
+
+// Thay bằng các endpoint thực tế của bạn
+const MOVIES_API = "https://your-api.com/api/movies";
+const USERS_API = "https://your-api.com/api/users";
+const CATEGORIES_API = "https://your-api.com/api/categories";
 
 function Dashboard() {
+  const [movies, setMovies] = useState([]);
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [totalCategories, setTotalCategories] = useState(0);
+
+  const fetchDashboardData = async () => {
+    try {
+      // Gọi song song
+      const [moviesRes, usersRes, categoriesRes] = await Promise.all([
+        fetch(MOVIES_API),
+        fetch(USERS_API),
+        fetch(CATEGORIES_API),
+      ]);
+
+      const moviesData = await moviesRes.json();
+      const usersData = await usersRes.json();
+      const categoriesData = await categoriesRes.json();
+
+      setMovies(moviesData);
+      setTotalUsers(usersData.length);
+      setTotalCategories(categoriesData.length);
+    } catch (err) {
+      console.error("Failed to fetch dashboard data:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
   const DashboardData = [
     {
       bg: "bg-orange-600",
       icon: FaRegListAlt,
       title: "Total Movies",
-      total: 90,
+      total: movies.length,
     },
     {
       bg: "bg-blue-700",
       icon: HiViewGridAdd,
       title: "Total Categories",
-      total: 8,
+      total: totalCategories,
     },
     {
       bg: "bg-green-600",
       icon: FaUser,
       title: "Total Users",
-      total: 134,
+      total: totalUsers,
     },
   ];
+
   return (
     <SideBar>
       <h2 className="text-xl font-bold">Dashboard</h2>
+
+      {/* Box thống kê */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
         {DashboardData.map((data, index) => (
           <div
@@ -42,13 +78,15 @@ function Dashboard() {
             </div>
             <div className="col-span-3">
               <h2>{data.title}</h2>
-              <p className=" mt-2 font-bold">{data.total}</p>
+              <p className="mt-2 font-bold">{data.total}</p>
             </div>
           </div>
         ))}
       </div>
+
+      {/* Movies mới nhất */}
       <h3 className="text-md font-medium my-6 text-border">Recent Movies</h3>
-      <Table data={Movies.slice(0, 5)} admin={true} />
+      <Table data={movies.slice(0, 5)} admin={true} />
     </SideBar>
   );
 }

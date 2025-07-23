@@ -13,11 +13,26 @@ function Register() {
   const handleRegister = (e) => {
     e.preventDefault();
 
-    // Giả lập lưu thông tin người dùng (bạn có thể tích hợp với API thật sau)
-    const user = { fullName, email, password };
+    // Kiểm tra xem đã có người dùng nào đăng ký chưa
+    const existingUser = JSON.parse(localStorage.getItem("registeredUser"));
+    if (existingUser && existingUser.email === email) {
+      alert("Email này đã được đăng ký. Vui lòng dùng email khác.");
+      return;
+    }
+
+    // Tạo người dùng mới
+    const user = {
+      fullName,
+      email,
+      password,
+      role: "user",
+      createdAt: new Date().toISOString()
+    };
+
+    // Lưu vào localStorage (giả lập)
     localStorage.setItem("registeredUser", JSON.stringify(user));
 
-    // Điều hướng đến login kèm theo thông báo
+    // Chuyển hướng đến trang đăng nhập
     navigate("/login", { state: { registered: true } });
   };
 

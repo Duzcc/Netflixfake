@@ -1,12 +1,27 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Autoplay } from 'swiper';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Movies } from '../../Data/MovieData';
-import FlexMovieItems from '../FlexMovieItems';
-import { FaHeart } from 'react-icons/fa';
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { Autoplay } from "swiper";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { fetchPopularMovies } from "../../Data/movieAPI";
+import FlexMovieItems from "../FlexMovieItems";
+import { FaHeart } from "react-icons/fa";
 
 function Banner() {
+  const [movies, setMovies] = useState([]);
+
+  useEffect(() => {
+    const loadMovies = async () => {
+      try {
+        const data = await fetchPopularMovies(); // lấy từ TMDB
+        setMovies(data.slice(0, 6)); // lấy 6 phim đầu tiên cho Banner
+      } catch (error) {
+        console.error("Failed to load banner movies:", error);
+      }
+    };
+
+    loadMovies();
+  }, []);
+
   return (
     <div className="relative w-full">
       <Swiper
@@ -18,23 +33,23 @@ function Banner() {
         autoplay={{ delay: 4000, disableOnInteraction: false }}
         className="w-full xl:h-96 bg-dry lg:h-64 h-48"
       >
-        {Movies.slice(0, 6).map((movie, index) => (
+        {movies.map((movie, index) => (
           <SwiperSlide key={index} className="relative rounded overflow-hidden">
             <img
-              src={`/images/movies/${movie.image}`}
-              alt={movie.name}
+              src={`https://image.tmdb.org/t/p/original${movie.backdrop_path || movie.poster_path}`}
+              alt={movie.title || movie.name}
               className="w-full h-full object-cover"
             />
             <div className="absolute linear-bg xl:pl-52 sm:pl-32 pl-8 top-0 bottom-0 right-0 left-0 flex flex-col justify-center lg:gap-8 md:gap-5 gap-4">
               <h1 className="xl:text-4xl truncate capitalize font-sans sm:text-2xl text-xl font-bold">
-                {movie.name}
+                {movie.title || movie.name}
               </h1>
               <div className="flex gap-5 items-center text-dryGray">
                 <FlexMovieItems movie={movie} />
               </div>
               <div className="flex gap-5 items-center">
                 <Link
-                  to={`/movie/${movie.name}`}
+                  to={`/movie/${movie.id}`}
                   className="bg-subMain hover:text-main transitions text-white px-8 py-3 rounded font-medium sm:text-sm text-xs"
                 >
                   Watch
