@@ -7,25 +7,35 @@ import FlexMovieItems from "../FlexMovieItems";
 function MovieInfo({ movie, setModalOpen }) {
   if (!movie) return null;
 
+  const BASE_IMAGE_URL = "https://image.tmdb.org/t/p/original";
+
   return (
     <div className="w-full xl:h-screen relative text-white">
       {/* Background Image (only on xl screen) */}
-      <img
-        src={`/images/movies/${movie?.image}`}
-        alt={movie?.name}
-        className="w-full hidden xl:inline-block h-full object-cover"
-      />
+      {movie.backdrop_path && (
+        <img
+          src={`${BASE_IMAGE_URL}${movie.backdrop_path}`}
+          alt={movie.title}
+          className="w-full hidden xl:inline-block h-full object-cover"
+        />
+      )}
 
       {/* Overlay Content */}
       <div className="xl:bg-main bg-dry xl:bg-opacity-90 xl:absolute top-0 left-0 right-0 bottom-0 flex flex-col justify-center">
         <div className="container mx-auto px-3 2xl:px-32 xl:grid grid-cols-3 gap-8 py-10 lg:py-20">
           {/* Thumbnail */}
           <div className="xl:col-span-1 h-header bg-dry border border-gray-800 rounded-lg overflow-hidden xl:order-none order-last">
-            <img
-              src={`/images/movies/${movie?.titleImage}`}
-              alt={movie?.name}
-              className="w-full h-full object-cover"
-            />
+            {movie.poster_path ? (
+              <img
+                src={`${BASE_IMAGE_URL}${movie.poster_path}`}
+                alt={movie.title}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full bg-gray-700 flex items-center justify-center text-sm text-white">
+                No Image
+              </div>
+            )}
           </div>
 
           {/* Info */}
@@ -33,7 +43,7 @@ function MovieInfo({ movie, setModalOpen }) {
             <div className="md:col-span-3 flex flex-col gap-8">
               {/* Title */}
               <h1 className="text-2xl xl:text-4xl font-bold capitalize">
-                {movie?.name}
+                {movie.title || movie.name}
               </h1>
 
               {/* Tags */}
@@ -43,7 +53,9 @@ function MovieInfo({ movie, setModalOpen }) {
               </div>
 
               {/* Description */}
-              <p className="text-sm text-text leading-7">{movie?.desc}</p>
+              <p className="text-sm text-text leading-7">
+                {movie.overview || "No description available."}
+              </p>
 
               {/* Detail Section: Share, Language, Watch */}
               <div className="grid grid-cols-3 sm:grid-cols-5 gap-4 p-6 bg-main border border-gray-800 rounded-lg">
@@ -60,14 +72,15 @@ function MovieInfo({ movie, setModalOpen }) {
                 {/* Language */}
                 <div className="col-span-2 flex-colo text-sm font-medium text-white">
                   <p>
-                    Language: <span className="ml-2">{movie?.language}</span>
+                    Language: {" "}
+                    <span className="ml-2">{movie.original_language?.toUpperCase()}</span>
                   </p>
                 </div>
 
                 {/* Watch Now */}
                 <div className="sm:col-span-2 col-span-3 flex justify-end">
                   <Link
-                    to={`/watch/${movie?.name}`}
+                    to={`/watch/${movie.id}`}
                     className="w-full py-3 sm:py-3 flex items-center justify-center gap-4 rounded-full bg-dry border-2 border-subMain hover:bg-subMain transition"
                   >
                     <FaPlay className="w-3 h-3" />

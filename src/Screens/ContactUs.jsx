@@ -17,7 +17,7 @@ function ContactUs() {
       title: 'Call Us',
       info: 'Distinctively exploit optimal alignments for intuitive bandwidth.',
       icon: FiPhoneCall,
-      contact: '+255 789 456 123',
+      contact: '+1234-567-890',
     },
     {
       id: 3,

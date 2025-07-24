@@ -15,6 +15,7 @@ const BASE_URL = "https://api.themoviedb.org/3";
 function SingleMovie() {
   const [modalOpen, setModalOpen] = useState(false);
   const [movie, setMovie] = useState(null);
+  const [casts, setCasts] = useState([]);
   const [relatedMovies, setRelatedMovies] = useState([]);
   const { id } = useParams();
 
@@ -33,6 +34,23 @@ function SingleMovie() {
     };
 
     fetchMovieDetail();
+  }, [id]);
+
+  // Fetch movie casts
+  useEffect(() => {
+    const fetchMovieCasts = async () => {
+      try {
+        const res = await fetch(
+          `${BASE_URL}/movie/${id}/credits?api_key=${API_KEY}&language=en-US`
+        );
+        const data = await res.json();
+        setCasts(data.cast || []);
+      } catch (error) {
+        console.error("Failed to fetch casts:", error);
+      }
+    };
+
+    fetchMovieCasts();
   }, [id]);
 
   // Fetch related movies
@@ -76,7 +94,7 @@ function SingleMovie() {
 
       <div className="container mx-auto min-h-screen px-2 my-6">
         {/* Dàn diễn viên */}
-        <MovieCasts movieId={id} />
+        <MovieCasts movie={{ casts }} />
 
         {/* Đánh giá người dùng */}
         <MovieRates movie={movie} />

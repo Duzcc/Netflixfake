@@ -13,26 +13,27 @@ function Register() {
   const handleRegister = (e) => {
     e.preventDefault();
 
-    // Kiểm tra xem đã có người dùng nào đăng ký chưa
-    const existingUser = JSON.parse(localStorage.getItem("registeredUser"));
-    if (existingUser && existingUser.email === email) {
-      alert("Email này đã được đăng ký. Vui lòng dùng email khác.");
+    const users = JSON.parse(localStorage.getItem("users")) || [];
+
+    // Kiểm tra email trùng
+    const isExist = users.find((user) => user.email === email);
+    if (isExist) {
+      alert("Email đã được sử dụng. Vui lòng dùng email khác.");
       return;
     }
 
-    // Tạo người dùng mới
-    const user = {
+    const newUser = {
       fullName,
       email,
       password,
       role: "user",
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
     };
 
-    // Lưu vào localStorage (giả lập)
-    localStorage.setItem("registeredUser", JSON.stringify(user));
+    users.push(newUser);
+    localStorage.setItem("users", JSON.stringify(users));
 
-    // Chuyển hướng đến trang đăng nhập
+    // Điều hướng về trang login
     navigate("/login", { state: { registered: true } });
   };
 
@@ -49,7 +50,7 @@ function Register() {
             className="w-full h-12 object-contain"
           />
           <Input
-            label="FullName"
+            label="Full Name"
             placeholder="Netflixo React Tailwind"
             type="text"
             bg={true}
@@ -79,7 +80,7 @@ function Register() {
             <FiLogIn /> Sign Up
           </button>
           <p className="text-center text-border">
-            Already have an account?{" "}
+            Already have an account?
             <Link to="/login" className="text-dryGray font-semibold ml-2">
               Sign In
             </Link>

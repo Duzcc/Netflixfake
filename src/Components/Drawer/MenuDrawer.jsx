@@ -58,7 +58,7 @@ function MenuDrawer({ drawerOpen, toggleDrawer }) {
         <div className="w-full flex-btn h-16 px-6 py-4 bg-dry">
           <Link onClick={toggleDrawer} to="/">
             <img
-              src="/images/logo.png"
+              src="/favicon.png"
               alt="logo"
               className="w-28 h-28 object-contain"
             />

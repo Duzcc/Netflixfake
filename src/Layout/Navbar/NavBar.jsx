@@ -29,7 +29,7 @@ function NavBar() {
           <div className="col-span-1 lg:block hidden">
             <Link to="/">
               <img
-                src="/images/logo.png"
+                src="/public/favicon.png"
                 alt="logo"
                 className="w-full h-12 object-contain"
               />

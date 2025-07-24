@@ -1,61 +1,56 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import Layout from "../Layout/Layout";
-import { BiArrowBack } from "react-icons/bi";
-import { FaCloudDownloadAlt, FaHeart } from "react-icons/fa";
 import { fetchMovieDetails, fetchMovieTrailer } from "../Data/movieAPI";
 
 function WatchPage() {
   const { id } = useParams();
   const [movie, setMovie] = useState(null);
   const [trailer, setTrailer] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const movieData = await fetchMovieDetails(id);
-      const trailerData = await fetchMovieTrailer(id);
+    const loadData = async () => {
+      setLoading(true);
+      const [movieData, trailerData] = await Promise.all([
+        fetchMovieDetails(id),
+        fetchMovieTrailer(id)
+      ]);
       setMovie(movieData);
       setTrailer(trailerData);
+      setLoading(false);
     };
-    fetchData();
+    loadData();
   }, [id]);
-
-  if (!movie) return <div className="text-white">Loading...</div>;
 
   return (
     <Layout>
-      <div className="container mx-auto bg-dry p-6 mb-12">
-        <div className="flex-btn flex-wrap mb-6 gap-2 bg-main rounded border border-gray-800 p-6">
-          <Link
-            to={`/movie/${movie?.id}`}
-            className="md:text-xl text-sm flex gap-3 items-center font-bold text-dryGray"
-          >
-            <BiArrowBack /> {movie?.title}
-          </Link>
-          <div className="flex-btn sm:w-auto w-full gap-5">
-            <button className="bg-white hover:text-subMain transitions bg-opacity-30 text-white rounded px-4 py-3 text-sm">
-              <FaHeart />
-            </button>
-            <button className="bg-subMain flex-rows gap-2 hover:text-main transitions text-white rounded px-8 font-medium py-3 text-sm">
-              <FaCloudDownloadAlt /> Download
-            </button>
-          </div>
-        </div>
-
-        {/* Video player */}
-        {trailer ? (
-          <iframe
-            src={`https://www.youtube.com/embed/${trailer.key}`}
-            title={movie.title}
-            width="100%"
-            height="500"
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            className="w-full h-[500px] rounded"
-          />
+      <div className="container mx-auto min-h-screen px-2 my-6">
+        {loading ? (
+          <p className="text-center text-white py-10">Loading...</p>
         ) : (
-          <p className="text-white">No trailer available</p>
+          trailer ? (
+            <div className="w-full flex-colo px-4 lg:py-12 py-6">
+              <h1 className="text-xl font-bold text-white text-center mb-6">
+                {movie?.title || movie?.name || "Untitled"}
+              </h1>
+              <div className="w-full aspect-video">
+                <iframe
+                  width="100%"
+                  height="100%"
+                  src={`https://www.youtube.com/embed/${trailer.key}`}
+                  title="YouTube video player"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+              </div>
+            </div>
+          ) : (
+            <p className="text-center text-white py-10">
+              No trailer available for this movie.
+            </p>
+          )
         )}
       </div>
     </Layout>

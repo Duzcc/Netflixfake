@@ -17,7 +17,6 @@ function Login() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Nếu đã đăng nhập thì chuyển hướng
   useEffect(() => {
     const existingUser = localStorage.getItem("user");
     if (existingUser) {
@@ -34,18 +33,17 @@ function Login() {
   const handleLogin = (e) => {
     e.preventDefault();
 
-    const registeredUser = JSON.parse(localStorage.getItem("registeredUser"));
+    const users = JSON.parse(localStorage.getItem("users")) || [];
+    const matchedUser = users.find(
+      (user) => user.email === email && user.password === password
+    );
+
     let userData = null;
 
-    if (
-      registeredUser &&
-      email === registeredUser.email &&
-      password === registeredUser.password
-    ) {
+    if (matchedUser) {
       userData = {
-        ...registeredUser,
-        loginAt: new Date().toISOString(),
-        role: registeredUser.role || "user"
+        ...matchedUser,
+        loginAt: new Date().toISOString()
       };
     } else if (email === fakeUser.email && password === fakeUser.password) {
       userData = {
