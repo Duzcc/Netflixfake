@@ -10,14 +10,6 @@ function Login() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // ❌ Bỏ đoạn redirect vòng lặp gây nháy
-  // useEffect(() => {
-  //   const existingUser = localStorage.getItem("user");
-  //   if (existingUser && location.pathname === "/login") {
-  //     navigate("/");
-  //   }
-  // }, [navigate, location.pathname]);
-
   useEffect(() => {
     if (location.state?.registered) {
       alert("Đăng ký thành công! Vui lòng đăng nhập.");

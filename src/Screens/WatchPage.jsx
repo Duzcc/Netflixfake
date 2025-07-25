@@ -18,7 +18,7 @@ function WatchPage() {
           fetchMovieTrailer(id),
         ]);
         setMovie(movieData);
-        setTrailerKey(trailerData); // trailerData giờ là key
+        setTrailerKey(trailerData);
       } catch (error) {
         console.error("Error loading movie data:", error);
       } finally {

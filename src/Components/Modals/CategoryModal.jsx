@@ -20,7 +20,6 @@ function CategoryModal({ modalOpen, setModalOpen, category }) {
 
     try {
       if (category) {
-        // Gọi API update
         await fetch(`https://your-api.com/api/categories/${category._id}`, {
           method: "PUT",
           headers: {
@@ -30,7 +29,6 @@ function CategoryModal({ modalOpen, setModalOpen, category }) {
         });
         console.log("Category updated:", payload);
       } else {
-        // Gọi API create
         await fetch(`https://your-api.com/api/categories`, {
           method: "POST",
           headers: {

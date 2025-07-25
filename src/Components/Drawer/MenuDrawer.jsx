@@ -44,11 +44,11 @@ function MenuDrawer({ drawerOpen, toggleDrawer }) {
     },
     {
       icon: FaTelegram,
-      link: "https://t.me/zpunet",
+      link: "",
     },
     {
       icon: FaYoutube,
-      link: "https://www.youtube.com/channel/UCOYwYO-LEsrjqBs6xXSfq1w",
+      link: "",
     },
   ];
 

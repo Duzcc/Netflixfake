@@ -38,7 +38,7 @@ function Profile() {
   const handleDeleteAccount = () => {
     localStorage.removeItem("registeredUser");
     setMessage("Account deleted.");
-    setTimeout(() => navigate("/login"), 1000); // chuyển về trang đăng nhập
+    setTimeout(() => navigate("/login"), 1000);
   };
 
   return (

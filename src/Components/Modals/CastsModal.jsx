@@ -10,7 +10,6 @@ function CastsModal({ modalOpen, setModalOpen, cast }) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // TODO: Replace with actual API call
     const payload = {
       fullName: name,
       image,
