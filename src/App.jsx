@@ -30,7 +30,9 @@ function App() {
     <DrawerContext>
       <ScrollOnTop>
         <Routes>
+          {/* ✅ Trang chủ sẽ hiển thị nếu đã đăng nhập, ngược lại chuyển về /login */}
           <Route path="/" element={isLoggedIn ? <HomeScreen /> : <Navigate to="/login" replace />} />
+
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/contact-us" element={<ContactUs />} />
           <Route path="/movies" element={isLoggedIn ? <MoviesPage /> : <Navigate to="/login" replace />} />
