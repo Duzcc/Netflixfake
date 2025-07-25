@@ -10,12 +10,13 @@ function Login() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  useEffect(() => {
-    const existingUser = localStorage.getItem("user");
-    if (existingUser && location.pathname === "/login") {
-      navigate("/");
-    }
-  }, [navigate, location.pathname]);
+  // ❌ Bỏ đoạn redirect vòng lặp gây nháy
+  // useEffect(() => {
+  //   const existingUser = localStorage.getItem("user");
+  //   if (existingUser && location.pathname === "/login") {
+  //     navigate("/");
+  //   }
+  // }, [navigate, location.pathname]);
 
   useEffect(() => {
     if (location.state?.registered) {
@@ -52,7 +53,7 @@ function Login() {
           className="w-full 2xl:w-2/5 gap-8 flex-colo p-8 sm:p-14 md:w-3/5 bg-dry rounded-lg border border-border"
         >
           <img
-            src="/images/logo.png"
+            src="/favicon.png"
             alt="logo"
             className="w-full h-12 object-contain"
           />
