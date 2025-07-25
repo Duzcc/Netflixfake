@@ -88,3 +88,17 @@ export async function getSimilarMovies(id) {
   const data = await res.json();
   return data.results;
 }
+
+// Lấy poster của phim, fallback nếu không có
+export function getPosterPath(path) {
+  return path
+    ? `https://image.tmdb.org/t/p/w500${path}`
+    : "https://placehold.co/500x750?text=No+Image";
+}
+
+// Lấy backdrop của phim, fallback nếu không có
+export function getBackdropPath(path) {
+  return path
+    ? `https://image.tmdb.org/t/p/original${path}`
+    : "https://placehold.co/1280x720?text=No+Backdrop";
+}
