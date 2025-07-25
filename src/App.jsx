@@ -20,6 +20,7 @@ import Register from './Screens/Register';
 import SingleMovie from './Screens/SingleMovie';
 import WatchPage from './Screens/WatchPage';
 import DrawerContext from './Context/DrawerContext';
+import PublicRoute from './Components/PublicRoute';
 
 function App() {
   Aos.init();

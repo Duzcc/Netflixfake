@@ -14,7 +14,7 @@ function NavBar() {
   const handleSearch = async (e) => {
     e.preventDefault();
     if (searchTerm.trim()) {
-      // Gọi API TMDB nếu bạn muốn xử lý kết quả tại đây
+      // Gọi API TMDB nếu muốn xử lý kết quả tại đây
       // const results = await searchMovies(searchTerm); 
       navigate(`/movies?query=${encodeURIComponent(searchTerm.trim())}`);
       setSearchTerm("");

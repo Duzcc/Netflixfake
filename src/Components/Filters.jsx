@@ -1,7 +1,7 @@
 import { Listbox, Transition } from "@headlessui/react";
 import React, { useState, useEffect, Fragment } from "react";
 import { FaAngleDown, FaCheck } from "react-icons/fa";
-import { getGenres } from "../Data/movieAPI"; // <- nhớ đã import
+import { getGenres } from "../Data/movieAPI";
 
 const YearData = [
   { title: "Sort By Year" },
@@ -36,7 +36,6 @@ function Filters({ onFilterChange }) {
   const [times, setTimes] = useState(TimesData[0]);
   const [rates, setRates] = useState(RatesData[0]);
 
-  // Load genres từ TMDB
   useEffect(() => {
     const fetchGenres = async () => {
       try {
@@ -53,7 +52,6 @@ function Filters({ onFilterChange }) {
     fetchGenres();
   }, []);
 
-  // Trigger callback mỗi khi có thay đổi
   useEffect(() => {
     onFilterChange?.({
       genreId: category?.id || null,

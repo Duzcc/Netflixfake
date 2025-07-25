@@ -10,8 +10,8 @@ function PopularMovies() {
   useEffect(() => {
     const loadPopular = async () => {
       try {
-        const data = await fetchPopularMovies(1); // trang 1
-        setMovies(data.slice(0, 8)); // Lấy 8 phim đầu
+        const data = await fetchPopularMovies(1);
+        setMovies(data.slice(0, 8));
       } catch (error) {
         console.error("Failed to fetch popular movies:", error);
       }

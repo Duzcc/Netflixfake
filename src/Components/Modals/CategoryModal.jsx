@@ -5,7 +5,6 @@ import { Input } from "../UsedInputs";
 function CategoryModal({ modalOpen, setModalOpen, category }) {
   const [title, setTitle] = useState("");
 
-  // Khi modal mở lại với dữ liệu mới
   useEffect(() => {
     setTitle(category?.title || "");
   }, [category]);

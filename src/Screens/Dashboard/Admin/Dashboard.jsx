@@ -4,32 +4,22 @@ import { HiViewGridAdd } from "react-icons/hi";
 import SideBar from "../SideBar";
 import Table from "../../../Components/Table";
 
-// Thay bằng các endpoint thực tế của bạn
-const MOVIES_API = "https://your-api.com/api/movies";
-const USERS_API = "https://your-api.com/api/users";
-const CATEGORIES_API = "https://your-api.com/api/categories";
+import { fetchPopularMovies, getGenres } from "../../../Data/movieAPI";
 
 function Dashboard() {
   const [movies, setMovies] = useState([]);
-  const [totalUsers, setTotalUsers] = useState(0);
+  const [totalUsers, setTotalUsers] = useState(120); 
   const [totalCategories, setTotalCategories] = useState(0);
 
   const fetchDashboardData = async () => {
     try {
-      // Gọi song song
-      const [moviesRes, usersRes, categoriesRes] = await Promise.all([
-        fetch(MOVIES_API),
-        fetch(USERS_API),
-        fetch(CATEGORIES_API),
+      const [moviesData, genresData] = await Promise.all([
+        fetchPopularMovies(),
+        getGenres(), 
       ]);
 
-      const moviesData = await moviesRes.json();
-      const usersData = await usersRes.json();
-      const categoriesData = await categoriesRes.json();
-
       setMovies(moviesData);
-      setTotalUsers(usersData.length);
-      setTotalCategories(categoriesData.length);
+      setTotalCategories(genresData.length);
     } catch (err) {
       console.error("Failed to fetch dashboard data:", err);
     }

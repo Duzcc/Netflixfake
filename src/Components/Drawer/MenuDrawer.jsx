@@ -36,7 +36,7 @@ function MenuDrawer({ drawerOpen, toggleDrawer }) {
   const LinkDatas = [
     {
       icon: FaFacebook,
-      link: "https://www.facebook.com/zpunet",
+      link: "https://www.facebook.com/share/1EqD5JCvZ9/?mibextid=wwXIfr",
     },
     {
       icon: FaMedium,

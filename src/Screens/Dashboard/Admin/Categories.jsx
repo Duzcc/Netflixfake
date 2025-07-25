@@ -4,8 +4,8 @@ import Table2 from "../../../Components/Table2";
 import SideBar from "../SideBar";
 import CategoryModal from "../../../Components/Modals/CategoryModal";
 
-// Giả sử bạn có API riêng để lấy category
-const API_URL = "https://your-api.com/api/categories"; // Thay bằng API thực tế
+const API_KEY = "30b47161062a3e6b81f7060289df3481";
+const BASE_URL = "https://api.themoviedb.org/3";
 
 function Categories() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -14,9 +14,9 @@ function Categories() {
 
   const fetchCategories = async () => {
     try {
-      const res = await fetch(API_URL);
+      const res = await fetch(`${BASE_URL}/genre/movie/list?api_key=${API_KEY}&language=en-US`);
       const data = await res.json();
-      setCategories(data);
+      setCategories(data.genres);
     } catch (err) {
       console.error("Error fetching categories:", err);
     }
@@ -34,7 +34,7 @@ function Categories() {
   useEffect(() => {
     if (modalOpen === false) {
       setCategory(null);
-      fetchCategories(); // Làm mới danh sách sau khi thêm/sửa
+      fetchCategories();
     }
   }, [modalOpen]);
 

@@ -4,7 +4,7 @@ function Head({ title }) {
   return (
     <div className="w-full bg-deepGray lg:h-64 h-40 relative overflow-hidden rounded-md">
       <img
-        src="/images/head.png"
+        src="/head.png"
         alt="aboutus"
         className="w-full h-full object-cover"
       />

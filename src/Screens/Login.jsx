@@ -4,13 +4,6 @@ import { Input } from "../Components/UsedInputs";
 import Layout from "../Layout/Layout";
 import { FiLogIn } from "react-icons/fi";
 
-const fakeUser = {
-  email: "netflixo@gmail.com",
-  password: "123456",
-  name: "Admin Demo",
-  role: "admin"
-};
-
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,10 +12,10 @@ function Login() {
 
   useEffect(() => {
     const existingUser = localStorage.getItem("user");
-    if (existingUser) {
+    if (existingUser && location.pathname === "/login") {
       navigate("/");
     }
-  }, [navigate]);
+  }, [navigate, location.pathname]);
 
   useEffect(() => {
     if (location.state?.registered) {
@@ -38,21 +31,11 @@ function Login() {
       (user) => user.email === email && user.password === password
     );
 
-    let userData = null;
-
     if (matchedUser) {
-      userData = {
+      const userData = {
         ...matchedUser,
         loginAt: new Date().toISOString()
       };
-    } else if (email === fakeUser.email && password === fakeUser.password) {
-      userData = {
-        ...fakeUser,
-        loginAt: new Date().toISOString()
-      };
-    }
-
-    if (userData) {
       localStorage.setItem("user", JSON.stringify(userData));
       alert("Đăng nhập thành công!");
       navigate("/");
@@ -75,7 +58,7 @@ function Login() {
           />
           <Input
             label="Email"
-            placeholder="netflixo@gmail.com"
+            placeholder="email@example.com"
             type="email"
             bg={true}
             value={email}

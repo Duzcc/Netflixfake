@@ -14,8 +14,15 @@ const BASE_URL = "https://api.themoviedb.org/3";
 function AddMovie() {
   const [modalOpen, setModalOpen] = useState(false);
   const [cast, setCast] = useState(null);
-  const [casts, setCasts] = useState([]); // NEW: list of actors
-  const movieId = 550; // 🟡 Bạn có thể đổi movieId động nếu cần
+  const [casts, setCasts] = useState([]);
+  const [movieId, setMovieId] = useState(550); 
+
+  const [title, setTitle] = useState("");
+  const [overview, setOverview] = useState("");
+  const [language, setLanguage] = useState("");
+  const [releaseYear, setReleaseYear] = useState("");
+  const [posterPath, setPosterPath] = useState("");
+  const [backdropPath, setBackdropPath] = useState("");
 
   useEffect(() => {
     if (modalOpen === false) {
@@ -23,39 +30,89 @@ function AddMovie() {
     }
   }, [modalOpen]);
 
-  // 🆕 Fetch cast list from TMDB API
   useEffect(() => {
-    const fetchCasts = async () => {
-      try {
-        const res = await fetch(`${BASE_URL}/movie/${movieId}/credits?api_key=${API_KEY}`);
-        const data = await res.json();
-        setCasts(data.cast.slice(0, 10)); // Chỉ lấy 10 diễn viên đầu
-      } catch (error) {
-        console.error("Failed to fetch casts:", error);
-      }
-    };
-
     fetchCasts();
-  }, []);
+  }, [movieId]);
+
+  const fetchCasts = async () => {
+    try {
+      const res = await fetch(`${BASE_URL}/movie/${movieId}/credits?api_key=${API_KEY}`);
+      const data = await res.json();
+      setCasts(data.cast.slice(0, 10));
+    } catch (error) {
+      console.error("Failed to fetch casts:", error);
+    }
+  };
+
+  const fetchMovieDetails = async () => {
+    try {
+      const res = await fetch(`${BASE_URL}/movie/${movieId}?api_key=${API_KEY}&language=en-US`);
+      const data = await res.json();
+
+      setTitle(data.title || "");
+      setOverview(data.overview || "");
+      setLanguage(data.original_language || "");
+      setReleaseYear(data.release_date?.split("-")[0] || "");
+      setPosterPath(data.poster_path ? `https://image.tmdb.org/t/p/w500${data.poster_path}` : "");
+      setBackdropPath(data.backdrop_path ? `https://image.tmdb.org/t/p/w780${data.backdrop_path}` : "");
+    } catch (error) {
+      console.error("Failed to fetch movie details:", error);
+    }
+  };
 
   return (
     <SideBar>
-      <CastsModal
-        modalOpen={modalOpen}
-        setModalOpen={setModalOpen}
-        cast={cast}
-      />
+      <CastsModal modalOpen={modalOpen} setModalOpen={setModalOpen} cast={cast} />
       <div className="flex flex-col gap-6">
         <h2 className="text-xl font-bold">Create Movie</h2>
 
+        {/* Movie ID Input + Fetch */}
         <div className="w-full grid md:grid-cols-2 gap-6">
-          <Input label="Movie Title" placeholder="Game of Thrones" type="text" bg={true} />
+          <Input
+            label="TMDB Movie ID"
+            placeholder="Enter TMDB Movie ID (e.g. 550)"
+            type="number"
+            bg={true}
+            value={movieId}
+            onChange={(e) => setMovieId(e.target.value)}
+          />
+          <button
+            onClick={fetchMovieDetails}
+            className="bg-subMain text-white px-4 py-3 rounded mt-6"
+          >
+            Fetch Movie Info
+          </button>
+        </div>
+
+        <div className="w-full grid md:grid-cols-2 gap-6">
+          <Input
+            label="Movie Title"
+            placeholder="Game of Thrones"
+            type="text"
+            bg={true}
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
           <Input label="Hours" placeholder="2hr" type="text" bg={true} />
         </div>
 
         <div className="w-full grid md:grid-cols-2 gap-6">
-          <Input label="Language Used" placeholder="English" type="text" bg={true} />
-          <Input label="Year of Release" placeholder="2022" type="number" bg={true} />
+          <Input
+            label="Language Used"
+            placeholder="English"
+            type="text"
+            bg={true}
+            value={language}
+            onChange={(e) => setLanguage(e.target.value)}
+          />
+          <Input
+            label="Year of Release"
+            placeholder="2022"
+            type="number"
+            bg={true}
+            value={releaseYear}
+            onChange={(e) => setReleaseYear(e.target.value)}
+          />
         </div>
 
         {/* IMAGES */}
@@ -64,20 +121,33 @@ function AddMovie() {
             <p className="text-border font-semibold text-sm">Image without Title</p>
             <Uploder />
             <div className="w-32 h-32 p-2 bg-main border border-border rounded">
-              <img src="/images/movies/99.jpg" alt="" className="w-full h-full object-cover rounded" />
+              <img
+                src={backdropPath || "/images/movies/99.jpg"}
+                alt=""
+                className="w-full h-full object-cover rounded"
+              />
             </div>
           </div>
           <div className="flex flex-col gap-2">
             <p className="text-border font-semibold text-sm">Image with Title</p>
             <Uploder />
             <div className="w-32 h-32 p-2 bg-main border border-border rounded">
-              <img src="/images/movies/88.jpg" alt="" className="w-full h-full object-cover rounded" />
+              <img
+                src={posterPath || "/images/movies/88.jpg"}
+                alt=""
+                className="w-full h-full object-cover rounded"
+              />
             </div>
           </div>
         </div>
 
         {/* DESCRIPTION */}
-        <Message label="Movie Description" placeholder="Make it short and sweet" />
+        <Message
+          label="Movie Description"
+          placeholder="Make it short and sweet"
+          value={overview}
+          onChange={(e) => setOverview(e.target.value)}
+        />
 
         {/* CATEGORY */}
         <div className="text-sm w-full">
@@ -99,7 +169,6 @@ function AddMovie() {
             Add Cast
           </button>
 
-          {/* 🆕 Casts from API */}
           <div className="grid 2xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-4 grid-cols-2 gap-4">
             {casts.map((actor, i) => (
               <div

@@ -6,14 +6,13 @@ import { fetchMovieDetails } from "../../Data/movieAPI";
 function FavoritesMovies() {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [version, setVersion] = useState(0);
 
   const loadFavorites = async () => {
     try {
       const favorites = JSON.parse(localStorage.getItem("favoriteMovies")) || [];
-
       const promises = favorites.map((id) => fetchMovieDetails(id));
       const results = await Promise.all(promises);
-
       setMovies(results);
     } catch (error) {
       console.error("Error loading favorite movies:", error);
@@ -24,11 +23,23 @@ function FavoritesMovies() {
 
   useEffect(() => {
     loadFavorites();
+  }, [version]);
+
+  useEffect(() => {
+    const updateFavorites = () => {
+      setVersion((v) => v + 1);
+    };
+
+    window.addEventListener("favoritesUpdated", updateFavorites);
+    return () => {
+      window.removeEventListener("favoritesUpdated", updateFavorites);
+    };
   }, []);
 
   const handleDeleteAll = () => {
     localStorage.removeItem("favoriteMovies");
     setMovies([]);
+    window.dispatchEvent(new CustomEvent("favoritesUpdated"));
   };
 
   return (

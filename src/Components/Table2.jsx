@@ -19,10 +19,10 @@ const Rows = (item, index, isUserTable, onEdit) => {
               />
             </div>
           </td>
-          <td className={Text}>{item._id || "N/A"}</td>
+          <td className={Text}>{item._id || item.email || index + 1}</td>
           <td className={Text}>{item.createdAt?.slice(0, 10) || "N/A"}</td>
-          <td className={Text}>{item.fullName}</td>
-          <td className={Text}>{item.email}</td>
+          <td className={Text}>{item.fullName || "No Name"}</td>
+          <td className={Text}>{item.email || "No Email"}</td>
         </>
       ) : (
         <>

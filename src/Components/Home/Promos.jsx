@@ -26,7 +26,7 @@ function Promos() {
         {/* Right: Image */}
         <div className="mt-10 lg:mt-0">
           <img
-            src="/images/mobile.png"
+            src="/mobile.png"
             alt="Mobile App"
             className="w-full object-contain drop-shadow-lg"
           />

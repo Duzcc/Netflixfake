@@ -1,52 +1,38 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../../Components/Table";
 import SideBar from "../SideBar";
+import { fetchPopularMovies } from "../../../Data/movieAPI";
 
 function MoviesList() {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch movies từ API
-  const fetchMovies = async () => {
-    try {
-      const res = await fetch("https://your-api.com/api/movies"); // thay URL phù hợp
-      const data = await res.json();
-      setMovies(data);
-    } catch (error) {
-      console.error("Failed to fetch movies:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchMovies();
+    const loadMovies = async () => {
+      try {
+        const data = await fetchPopularMovies();
+        setMovies(data);
+      } catch (error) {
+        console.error("Failed to fetch movies:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadMovies();
   }, []);
-
-  // Hàm xoá toàn bộ movie
-  const handleDeleteAll = async () => {
-    if (!window.confirm("Are you sure you want to delete all movies?")) return;
-
-    try {
-      await fetch("https://your-api.com/api/movies", {
-        method: "DELETE",
-      });
-      setMovies([]); // Cập nhật lại UI
-    } catch (err) {
-      console.error("Failed to delete all movies:", err);
-    }
-  };
 
   return (
     <SideBar>
       <div className="flex flex-col gap-6">
         <div className="flex-btn gap-2">
-          <h2 className="text-xl font-bold">Movies List</h2>
+          <h2 className="text-xl font-bold text-white">Popular Movies</h2>
+          {/* Nút xóa tạm thời bị vô hiệu hóa vì không có backend riêng */}
           <button
-            onClick={handleDeleteAll}
-            className="bg-main font-medium transitions hover:bg-subMain border border-subMain text-white py-3 px-6 rounded"
+            disabled
+            className="bg-gray-500 font-medium border border-gray-700 text-white py-3 px-6 rounded opacity-50 cursor-not-allowed"
           >
-            Delete All
+            Delete All (disabled)
           </button>
         </div>
 

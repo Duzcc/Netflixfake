@@ -11,7 +11,7 @@ function MobileFooter() {
   const [favoriteCount, setFavoriteCount] = useState(0);
 
   useEffect(() => {
-    // Giả sử bạn lưu danh sách yêu thích trong localStorage hoặc context
+ 
     const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
     setFavoriteCount(favorites.length);
   }, []);

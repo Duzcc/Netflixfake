@@ -15,25 +15,24 @@ function Register() {
 
     const users = JSON.parse(localStorage.getItem("users")) || [];
 
-    // Kiểm tra email trùng
-    const isExist = users.find((user) => user.email === email);
+    // Kiểm tra trùng email
+    const isExist = users.some((user) => user.email === email);
     if (isExist) {
-      alert("Email đã được sử dụng. Vui lòng dùng email khác.");
+      alert("Email đã được đăng ký. Vui lòng dùng email khác.");
       return;
     }
 
     const newUser = {
-      fullName,
+      name: fullName,
       email,
       password,
       role: "user",
-      createdAt: new Date().toISOString(),
+      createdAt: new Date().toISOString()
     };
 
     users.push(newUser);
     localStorage.setItem("users", JSON.stringify(users));
 
-    // Điều hướng về trang login
     navigate("/login", { state: { registered: true } });
   };
 

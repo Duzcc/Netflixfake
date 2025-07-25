@@ -12,8 +12,8 @@ function Banner() {
   useEffect(() => {
     const loadMovies = async () => {
       try {
-        const data = await fetchPopularMovies(); // lấy từ TMDB
-        setMovies(data.slice(0, 6)); // lấy 6 phim đầu tiên cho Banner
+        const data = await fetchPopularMovies();
+        setMovies(data.slice(0, 6));
       } catch (error) {
         console.error("Failed to load banner movies:", error);
       }

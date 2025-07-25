@@ -14,16 +14,59 @@ function MoviesPage() {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
 
+  const [filters, setFilters] = useState({
+    genreId: null,
+    yearRange: null,
+    timeRange: null,
+    rating: null,
+  });
+
+  const applyFilters = (movieList) => {
+    return movieList.filter((movie) => {
+      const {
+        genreId,
+        yearRange,
+        timeRange,
+        rating,
+      } = filters;
+
+      if (genreId && !movie.genre_ids?.includes(genreId)) return false;
+
+      if (
+        yearRange &&
+        (!movie.release_date ||
+          +movie.release_date.slice(0, 4) < yearRange[0] ||
+          +movie.release_date.slice(0, 4) > yearRange[1])
+      )
+        return false;
+
+      if (
+        timeRange &&
+        movie.runtime !== undefined &&
+        (movie.runtime < timeRange[0] || movie.runtime > timeRange[1])
+      )
+        return false;
+
+      if (rating && Math.floor(movie.vote_average / 2) < rating) return false;
+
+      return true;
+    });
+  };
+
   const loadMovies = async () => {
     try {
       setLoading(true);
+      let fetchedMovies = [];
+
       if (query) {
-        const searchResults = await searchMovies(query);
-        setMovies(searchResults);
+        fetchedMovies = await searchMovies(query);
       } else {
         const newMovies = await fetchPopularMovies(page);
-        setMovies((prev) => [...prev, ...newMovies]);
+        fetchedMovies = [...(page === 1 ? [] : movies), ...newMovies];
       }
+
+      const filtered = applyFilters(fetchedMovies);
+      setMovies(filtered);
     } catch (error) {
       console.error("Error loading movies:", error);
     } finally {
@@ -32,13 +75,12 @@ function MoviesPage() {
   };
 
   useEffect(() => {
-    setMovies([]); // reset movie list if query changes
     setPage(1);
-  }, [query]);
+  }, [query, filters]);
 
   useEffect(() => {
     loadMovies();
-  }, [page, query]);
+  }, [page, query, filters]);
 
   const handleLoadMore = () => {
     if (!query) {
@@ -49,7 +91,7 @@ function MoviesPage() {
   return (
     <Layout>
       <div className="min-height-screen container mx-auto px-2 my-6">
-        <Filters />
+        <Filters onFilterChange={setFilters} />
         <p className="text-lg font-medium my-6">
           Total{" "}
           <span className="font-bold text-subMain">{movies.length}</span>{" "}
@@ -62,7 +104,6 @@ function MoviesPage() {
           ))}
         </div>
 
-        {/* Load More: only for popular movies, not search results */}
         {!query && (
           <div className="w-full flex-colo md:my-20 my-10">
             <button

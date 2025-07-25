@@ -19,7 +19,6 @@ function SingleMovie() {
   const [relatedMovies, setRelatedMovies] = useState([]);
   const { id } = useParams();
 
-  // Fetch movie detail
   useEffect(() => {
     const fetchMovieDetail = async () => {
       try {
@@ -36,7 +35,6 @@ function SingleMovie() {
     fetchMovieDetail();
   }, [id]);
 
-  // Fetch movie casts
   useEffect(() => {
     const fetchMovieCasts = async () => {
       try {
@@ -53,7 +51,6 @@ function SingleMovie() {
     fetchMovieCasts();
   }, [id]);
 
-  // Fetch related movies
   useEffect(() => {
     const fetchRelatedMovies = async () => {
       try {

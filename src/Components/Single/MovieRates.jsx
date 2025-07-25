@@ -71,7 +71,7 @@ function MovieRates({ movie }) {
               const avatarPath = review.author_details.avatar_path;
               const avatarUrl = avatarPath
                 ? avatarPath.startsWith("/https")
-                  ? avatarPath.slice(1) // remove leading "/" if it's a full URL
+                  ? avatarPath.slice(1)
                   : `https://image.tmdb.org/t/p/w300${avatarPath}`
                 : "/images/user.jpg";
 

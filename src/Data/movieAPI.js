@@ -27,11 +27,26 @@ export async function fetchMovieTrailer(id) {
   const res = await fetch(`${BASE_URL}/movie/${id}/videos?api_key=${API_KEY}&language=en-US`);
   const data = await res.json();
 
-  const trailer = data.results.find(
-    (video) => video.type === "Trailer" && video.site === "YouTube"
+  if (!data.results || data.results.length === 0) return null;
+
+  // Ưu tiên trailer chính thức (official)
+  const officialTrailer = data.results.find(
+    (video) =>
+      video.type === "Trailer" &&
+      video.site === "YouTube" &&
+      video.official === true
   );
 
-  return trailer ? trailer.key : null;
+  if (officialTrailer) return officialTrailer.key;
+
+  // Nếu không có trailer chính thức, lấy trailer bất kỳ từ YouTube
+  const fallbackTrailer = data.results.find(
+    (video) =>
+      video.type === "Trailer" &&
+      video.site === "YouTube"
+  );
+
+  return fallbackTrailer ? fallbackTrailer.key : null;
 }
 
 // Tìm kiếm phim

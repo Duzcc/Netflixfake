@@ -3,6 +3,8 @@ import { FaCloudDownloadAlt, FaEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { GoEye } from "react-icons/go";
+import Rating from "./Rating";
+
 const Head = "text-xs text-left text-main font-semibold px-6 py-2 uppercase";
 const Text = "text-sm text-left leading-6 whitespace-nowrap px-5 py-3";
 
@@ -38,9 +40,9 @@ function Table({ data = [], admin = false }) {
               <td className={`${Text} truncate`}>{movie.title}</td>
 
               <td className={Text}>
-                {movie.genre_ids && movie.genre_ids.length > 0
-                  ? movie.genre_ids.join(", ")
-                  : "N/A"}
+                {movie.genres
+                  ? movie.genres.map((g) => g.name).join(", ")
+                  : movie.genre_ids?.join(", ") || "N/A"}
               </td>
 
               <td className={Text}>
@@ -52,7 +54,7 @@ function Table({ data = [], admin = false }) {
               </td>
 
               <td className={Text}>
-                <Rating value={movie.vote_average / 2} /> {/* vote_average từ 0-10 => chia 2 */}
+                <Rating value={movie.vote_average / 2} />
               </td>
 
               <td className={`${Text} float-right flex gap-2 items-center`}>
