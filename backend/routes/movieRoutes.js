@@ -13,6 +13,7 @@ import {
     updateMovie,
     deleteMovie,
     deleteAllMovies,
+    getMovieReviews,
     createMovieReview,
     updateMovieReview,
     deleteMovieReview,
@@ -37,6 +38,7 @@ router.get('/:id/similar', getSimilarMovies);
 
 // Private routes - Reviews
 router.route('/:id/reviews')
+    .get(getMovieReviews)  // Public GET
     .post(protect, validateReview, createMovieReview)
     .put(protect, validateReview, updateMovieReview)
     .delete(protect, deleteMovieReview);

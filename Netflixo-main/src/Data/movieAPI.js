@@ -18,10 +18,16 @@ export async function fetchMovieDetails(id) {
   return data;
 }
 
-// Lấy trailer chính thức từ danh sách videos
+// Lấy trailer chính thức từ danh sách videos (hỗ trợ cả MongoDB và TMDb format)
 export async function fetchMovieTrailer(id) {
   const { data } = await api.get(`/movies/${id}`);
 
+  // MongoDB format (imported movies) - đã có sẵn video key
+  if (data.video) {
+    return data.video;
+  }
+
+  // TMDb API format (fallback movies)
   if (!data.videos || !data.videos.results || data.videos.results.length === 0) return null;
 
   // Ưu tiên trailer chính thức (official)
@@ -57,7 +63,7 @@ export async function getMovieReviews(id) {
     // Backend returns {reviews: [...], totalReviews: X, isFake: boolean}
     return data;
   } catch (error) {
-    console.error('Error fetching reviews:', error);
+    // Silently fail - frontend will use localStorage fallback
     return { reviews: [], totalReviews: 0 };
   }
 }

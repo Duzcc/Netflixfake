@@ -3,11 +3,6 @@ import Notification from '../models/Notification.js';
 import User from '../models/User.js';
 import sendEmail from '../utils/sendEmail.js';
 
-// ==================== USER NOTIFICATION ENDPOINTS ====================
-
-// @desc    Get user notifications
-// @route   GET /api/notifications
-// @access  Private
 export const getUserNotifications = asyncHandler(async (req, res) => {
     const { unreadOnly, limit = 20, page = 1 } = req.query;
 
@@ -36,9 +31,6 @@ export const getUserNotifications = asyncHandler(async (req, res) => {
     });
 });
 
-// @desc    Mark notification as read
-// @route   PUT /api/notifications/:notificationId/read
-// @access  Private
 export const markAsRead = asyncHandler(async (req, res) => {
     const { notificationId } = req.params;
 
@@ -57,9 +49,6 @@ export const markAsRead = asyncHandler(async (req, res) => {
     res.json({ message: 'Notification marked as read', notification });
 });
 
-// @desc    Mark all notifications as read
-// @route   PUT /api/notifications/mark-all-read
-// @access  Private
 export const markAllAsRead = asyncHandler(async (req, res) => {
     await Notification.updateMany(
         { userId: req.user._id, read: false },
@@ -69,9 +58,6 @@ export const markAllAsRead = asyncHandler(async (req, res) => {
     res.json({ message: 'All notifications marked as read' });
 });
 
-// @desc    Delete notification
-// @route   DELETE /api/notifications/:notificationId
-// @access  Private
 export const deleteNotification = asyncHandler(async (req, res) => {
     const { notificationId } = req.params;
 
@@ -90,11 +76,6 @@ export const deleteNotification = asyncHandler(async (req, res) => {
     res.json({ message: 'Notification deleted' });
 });
 
-// ==================== ADMIN NOTIFICATION ENDPOINTS ====================
-
-// @desc    Send announcement to all users
-// @route   POST /api/notifications/admin/broadcast
-// @access  Private/Admin
 export const broadcastAnnouncement = asyncHandler(async (req, res) => {
     const { title, message, type = 'announcement', priority = 'medium', link, sendEmail: shouldSendEmail } = req.body;
 
@@ -103,7 +84,6 @@ export const broadcastAnnouncement = asyncHandler(async (req, res) => {
         throw new Error('Title and message are required');
     }
 
-    // Get all active users
     const users = await User.find({ banned: false }).select('_id email name');
 
     if (users.length === 0) {
@@ -111,7 +91,6 @@ export const broadcastAnnouncement = asyncHandler(async (req, res) => {
         throw new Error('No active users found');
     }
 
-    // Create notifications for all users
     const notifications = users.map(user => ({
         userId: user._id,
         type,
@@ -123,7 +102,6 @@ export const broadcastAnnouncement = asyncHandler(async (req, res) => {
 
     await Notification.insertMany(notifications);
 
-    // Optionally send emails
     if (shouldSendEmail) {
         const emailPromises = users.map(user =>
             sendEmail({
@@ -149,9 +127,6 @@ export const broadcastAnnouncement = asyncHandler(async (req, res) => {
     });
 });
 
-// @desc    Send notification to specific users
-// @route   POST /api/notifications/admin/send
-// @access  Private/Admin
 export const sendToUsers = asyncHandler(async (req, res) => {
     const { userIds, title, message, type = 'system', priority = 'medium', link } = req.body;
 
@@ -165,7 +140,6 @@ export const sendToUsers = asyncHandler(async (req, res) => {
         throw new Error('Title and message are required');
     }
 
-    // Create notifications
     const notifications = userIds.map(userId => ({
         userId,
         type,
@@ -183,9 +157,6 @@ export const sendToUsers = asyncHandler(async (req, res) => {
     });
 });
 
-// @desc    Get all notifications (admin)
-// @route   GET /api/notifications/admin/all
-// @access  Private/Admin
 export const getAllNotifications = asyncHandler(async (req, res) => {
     const { type, read, page = 1, limit = 50 } = req.query;
 
@@ -209,9 +180,6 @@ export const getAllNotifications = asyncHandler(async (req, res) => {
     });
 });
 
-// @desc    Delete old notifications
-// @route   DELETE /api/notifications/admin/cleanup
-// @access  Private/Admin
 export const cleanupNotifications = asyncHandler(async (req, res) => {
     const { daysOld = 30 } = req.query;
 
@@ -228,26 +196,20 @@ export const cleanupNotifications = asyncHandler(async (req, res) => {
     });
 });
 
-// @desc    Get notification statistics
-// @route   GET /api/notifications/admin/stats
-// @access  Private/Admin
 export const getNotificationStats = asyncHandler(async (req, res) => {
     const total = await Notification.countDocuments();
     const unread = await Notification.countDocuments({ read: false });
     const read = await Notification.countDocuments({ read: true });
 
-    // By type
     const byType = await Notification.aggregate([
         { $group: { _id: '$type', count: { $sum: 1 } } },
         { $sort: { count: -1 } },
     ]);
 
-    // By priority
     const byPriority = await Notification.aggregate([
         { $group: { _id: '$priority', count: { $sum: 1 } } },
     ]);
 
-    // Recent activity (last 7 days)
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
     const recentCount = await Notification.countDocuments({
         createdAt: { $gte: sevenDaysAgo },

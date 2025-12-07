@@ -17,6 +17,7 @@ import reviewRoutes from './routes/reviewRoutes.js';
 import analyticsRoutes from './routes/analyticsRoutes.js';
 import moderationRoutes from './routes/moderationRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
+import tmdbRoutes from './routes/tmdbRoutes.js';
 
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpecs from './config/swagger.js';
@@ -177,6 +178,7 @@ app.use('/api/v1/analytics', analyticsRoutes);
 app.use('/api/v1', reviewRoutes); // Review routes support both /movies/:id/reviews and /reviews/:id
 app.use('/api/v1/moderation', moderationRoutes);
 app.use('/api/v1/notifications', notificationRoutes);
+app.use('/api/v1/tmdb', tmdbRoutes);
 
 // Legacy routes (backwards compatibility) - will be deprecated
 app.use('/api/users', userRoutes);
@@ -189,6 +191,7 @@ app.use('/api/watchlist', watchlistRoutes);
 app.use('/api/history', historyRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api', reviewRoutes);
+app.use('/api/tmdb', tmdbRoutes);
 
 // ============================================
 // STATIC FILE SERVING

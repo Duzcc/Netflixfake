@@ -4,11 +4,6 @@ import Movie from '../models/Movie.js';
 import Review from '../models/Review.js';
 import User from '../models/User.js';
 
-// ==================== CONTENT FLAGGING ====================
-
-// @desc    Report/Flag content
-// @route   POST /api/moderation/flag
-// @access  Private
 export const flagContent = asyncHandler(async (req, res) => {
     const { contentType, contentId, movieId, reason, description } = req.body;
 
@@ -17,7 +12,6 @@ export const flagContent = asyncHandler(async (req, res) => {
         throw new Error('Content type, reason, and description are required');
     }
 
-    // Validate content exists
     let contentExists = false;
     if (contentType === 'movie' && movieId) {
         contentExists = await Movie.findOne({ movieId: Number(movieId) });
@@ -47,9 +41,6 @@ export const flagContent = asyncHandler(async (req, res) => {
     });
 });
 
-// @desc    Get all flagged content
-// @route   GET /api/moderation/flags
-// @access  Private/Admin
 export const getFlaggedContent = asyncHandler(async (req, res) => {
     const { status = 'pending', contentType, page = 1, limit = 20 } = req.query;
 
@@ -74,9 +65,6 @@ export const getFlaggedContent = asyncHandler(async (req, res) => {
     });
 });
 
-// @desc    Resolve flag
-// @route   PUT /api/moderation/flags/:flagId/resolve
-// @access  Private/Admin
 export const resolveFlag = asyncHandler(async (req, res) => {
     const { flagId } = req.params;
     const { resolution, actionTaken } = req.body;
@@ -102,9 +90,6 @@ export const resolveFlag = asyncHandler(async (req, res) => {
     });
 });
 
-// @desc    Ignore flag
-// @route   PUT /api/moderation/flags/:flagId/ignore
-// @access  Private/Admin
 export const ignoreFlag = asyncHandler(async (req, res) => {
     const { flagId } = req.params;
 
@@ -127,11 +112,6 @@ export const ignoreFlag = asyncHandler(async (req, res) => {
     });
 });
 
-// ==================== MOVIE MODERATION ====================
-
-// @desc    Get all movies with filters (admin)
-// @route   GET /api/moderation/movies
-// @access  Private/Admin
 export const getAllMovies = asyncHandler(async (req, res) => {
     const { category, year, page = 1, limit = 20, search } = req.query;
 
@@ -160,9 +140,6 @@ export const getAllMovies = asyncHandler(async (req, res) => {
     });
 });
 
-// @desc    Bulk delete movies
-// @route   POST /api/moderation/movies/bulk-delete
-// @access  Private/Admin
 export const bulkDeleteMovies = asyncHandler(async (req, res) => {
     const { movieIds } = req.body;
 
@@ -179,9 +156,6 @@ export const bulkDeleteMovies = asyncHandler(async (req, res) => {
     });
 });
 
-// @desc    Bulk update movie category
-// @route   POST /api/moderation/movies/bulk-category
-// @access  Private/Admin
 export const bulkUpdateCategory = asyncHandler(async (req, res) => {
     const { movieIds, category } = req.body;
 
@@ -201,9 +175,6 @@ export const bulkUpdateCategory = asyncHandler(async (req, res) => {
     });
 });
 
-// @desc    Auto-moderate content based on keywords
-// @route   POST /api/moderation/auto-moderate
-// @access  Private/Admin
 export const autoModerate = asyncHandler(async (req, res) => {
     const bannedKeywords = [
         'spam',
@@ -211,10 +182,8 @@ export const autoModerate = asyncHandler(async (req, res) => {
         'porn',
         'xxx',
         'explicit',
-        // Add more keywords as needed
     ];
 
-    // Check reviews for banned keywords
     const flaggedReviews = await Review.find({
         $or: bannedKeywords.map(keyword => ({
             comment: { $regex: keyword, $options: 'i' },
@@ -229,7 +198,6 @@ export const autoModerate = asyncHandler(async (req, res) => {
         review.flagReason = 'Auto-flagged: Contains inappropriate keywords';
         await review.save();
 
-        // Create flag record
         await ContentFlag.create({
             contentType: 'review',
             contentId: review._id,
@@ -248,27 +216,21 @@ export const autoModerate = asyncHandler(async (req, res) => {
     });
 });
 
-// @desc    Get moderation statistics
-// @route   GET /api/moderation/stats
-// @access  Private/Admin
 export const getModerationStats = asyncHandler(async (req, res) => {
     const totalFlags = await ContentFlag.countDocuments();
     const pendingFlags = await ContentFlag.countDocuments({ status: 'pending' });
     const resolvedFlags = await ContentFlag.countDocuments({ status: 'resolved' });
     const ignoredFlags = await ContentFlag.countDocuments({ status: 'ignored' });
 
-    // Flags by content type
     const flagsByType = await ContentFlag.aggregate([
         { $group: { _id: '$contentType', count: { $sum: 1 } } },
     ]);
 
-    // Flags by reason
     const flagsByReason = await ContentFlag.aggregate([
         { $group: { _id: '$reason', count: { $sum: 1 } } },
         { $sort: { count: -1 } },
     ]);
 
-    // Top reporters
     const topReporters = await ContentFlag.aggregate([
         { $group: { _id: '$reportedBy', count: { $sum: 1 } } },
         { $sort: { count: -1 } },

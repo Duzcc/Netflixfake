@@ -8,13 +8,9 @@ import { adminApprovalEmailTemplate, userApprovedEmailTemplate } from '../utils/
 import { adminOTPEmailTemplate } from '../utils/emailTemplates/adminOTPEmail.js';
 import crypto from 'crypto';
 
-// @desc    Approve user by admin email link
-// @route   GET /api/users/approve-user/:token
-// @access  Public (but requires valid token)
 export const approveUserByToken = asyncHandler(async (req, res) => {
     const { token } = req.params;
 
-    // Find user with matching approval token
     const users = await User.find({
         approvalToken: { $exists: true },
         approvalTokenExpires: { $gt: Date.now() }
@@ -34,7 +30,6 @@ export const approveUserByToken = asyncHandler(async (req, res) => {
         throw new Error('Invalid or expired approval link');
     }
 
-    // Approve user
     approvedUser.accountStatus = 'active';
     approvedUser.isVerified = true;
     approvedUser.approvalToken = undefined;
@@ -43,7 +38,6 @@ export const approveUserByToken = asyncHandler(async (req, res) => {
 
     await approvedUser.save();
 
-    // Send confirmation email to user
     try {
         await sendEmail({
             email: approvedUser.email,
@@ -52,7 +46,6 @@ export const approveUserByToken = asyncHandler(async (req, res) => {
         });
     } catch (error) {
         console.error('Error sending approval confirmation email:', error);
-        // Don't fail the approval if email fails
     }
 
     res.status(200).json({
@@ -65,9 +58,6 @@ export const approveUserByToken = asyncHandler(async (req, res) => {
     });
 });
 
-// @desc    Login with 2FA for admin
-// @route   POST /api/users/admin/login-2fa
-// @access  Public
 export const loginAdmin2FA = asyncHandler(async (req, res) => {
     const { email, password, deviceId } = req.body;
 
@@ -78,19 +68,16 @@ export const loginAdmin2FA = asyncHandler(async (req, res) => {
         throw new Error('Invalid email or password');
     }
 
-    // Check if user is admin
     if (!user.isAdmin) {
         res.status(403);
         throw new Error('This endpoint is for admin login only');
     }
 
-    // Check account status
     if (user.banned) {
         res.status(403);
         throw new Error(`Account banned: ${user.bannedReason || 'Violation of terms'}`);
     }
 
-    // Check if device is trusted
     if (deviceId) {
         const trustedDevice = await TrustedDevice.findOne({
             userId: user._id,
@@ -99,7 +86,6 @@ export const loginAdmin2FA = asyncHandler(async (req, res) => {
         });
 
         if (trustedDevice) {
-            // Device is trusted, skip OTP
             await trustedDevice.updateLastUsed();
 
             return res.json({
@@ -115,16 +101,13 @@ export const loginAdmin2FA = asyncHandler(async (req, res) => {
         }
     }
 
-    // Generate 6-digit OTP
     const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // Save OTP to database
     await OTP.create({
         userId: user._id,
         code: otpCode,
     });
 
-    // Send OTP email
     try {
         await sendEmail({
             email: user.email,
@@ -144,9 +127,6 @@ export const loginAdmin2FA = asyncHandler(async (req, res) => {
     }
 });
 
-// @desc    Verify OTP and complete login
-// @route   POST /api/users/admin/verify-otp
-// @access  Public
 export const verifyOTP = asyncHandler(async (req, res) => {
     const { email, otp, trustDevice, deviceId, deviceInfo } = req.body;
 
@@ -157,7 +137,6 @@ export const verifyOTP = asyncHandler(async (req, res) => {
         throw new Error('User not found');
     }
 
-    // Find valid OTP
     const otpRecord = await OTP.findOne({
         userId: user._id,
         code: otp,
@@ -169,10 +148,8 @@ export const verifyOTP = asyncHandler(async (req, res) => {
         throw new Error('Invalid or expired OTP code');
     }
 
-    // Delete used OTP
     await OTP.deleteOne({ _id: otpRecord._id });
 
-    // If trustDevice is requested, save device
     if (trustDevice && deviceId) {
         await TrustedDevice.findOneAndUpdate(
             { userId: user._id, deviceId },
@@ -199,13 +176,9 @@ export const verifyOTP = asyncHandler(async (req, res) => {
     });
 });
 
-// @desc    Verify registration OTP and activate account
-// @route   POST /api/users/verify-registration-otp
-// @access  Public
 export const verifyRegistrationOTP = asyncHandler(async (req, res) => {
     const { userId, email, otp } = req.body;
 
-    // Query by userId only (email might be admin email for testing)
     const user = await User.findById(userId);
 
     if (!user) {
@@ -213,13 +186,11 @@ export const verifyRegistrationOTP = asyncHandler(async (req, res) => {
         throw new Error('User not found');
     }
 
-    // Check if already verified
     if (user.isVerified && user.accountStatus === 'active') {
         res.status(400);
         throw new Error('Account already verified');
     }
 
-    // Find valid OTP
     const otpRecord = await OTP.findOne({
         userId: user._id,
         code: otp,
@@ -231,10 +202,8 @@ export const verifyRegistrationOTP = asyncHandler(async (req, res) => {
         throw new Error('Invalid or expired OTP code');
     }
 
-    // Delete used OTP
     await OTP.deleteOne({ _id: otpRecord._id });
 
-    // Activate user account
     user.isVerified = true;
     user.accountStatus = 'active';
     await user.save();
@@ -252,9 +221,6 @@ export const verifyRegistrationOTP = asyncHandler(async (req, res) => {
     });
 });
 
-// @desc    Get admin email for sending approval links
-// @route   GET /api/users/admin/email
-// @access  Private (for internal use)
 export const getAdminEmail = asyncHandler(async (req, res) => {
     const admin = await User.findOne({ isAdmin: true }).select('email');
 

@@ -35,14 +35,21 @@ function MovieCasts({ movie }) {
               <div className="w-full p-3 text-center italic text-xs text-text rounded flex-colo bg-dry border border-border hover:scale-105 transition duration-300">
                 <img
                   src={
-                    cast.profile_path
-                      ? `${BASE_IMAGE_URL}${cast.profile_path}`
-                      : "/images/user.png"
+                    // MongoDB format (full URL)
+                    cast.image ||
+                    // TMDb format (profile_path)
+                    (cast.profile_path ? `${BASE_IMAGE_URL}${cast.profile_path}` : "/images/user.png")
                   }
                   alt={cast.name}
                   className="w-full h-64 object-cover rounded mb-4"
+                  onError={(e) => {
+                    e.target.src = "/images/user.png";
+                  }}
                 />
                 <p className="text-sm font-medium">{cast.name}</p>
+                {cast.character && (
+                  <p className="text-xs text-gray-400 mt-1">{cast.character}</p>
+                )}
               </div>
             </SwiperSlide>
           ))}

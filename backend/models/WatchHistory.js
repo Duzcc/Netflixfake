@@ -7,10 +7,10 @@ const watchHistorySchema = mongoose.Schema(
             required: true,
             ref: 'User',
         },
-        // Store TMDB movie data directly (not MongoDB reference)
+        // Store movie data (support both TMDb numeric IDs and MongoDB ObjectId strings)
         movie: {
             movieId: {
-                type: Number,
+                type: mongoose.Schema.Types.Mixed, // Support both Number and String
                 required: true,
             },
             title: {

@@ -42,16 +42,34 @@ function MovieInfo({ movie, setModalOpen }) {
 
   if (!movie) return null;
 
-  const BASE_IMAGE_URL = "https://image.tmdb.org/t/p/original";
+  // Detect if data is from MongoDB or TMDb
+  const isMongoDBData = movie.hasOwnProperty('name');
+
+  // Get image URLs based on data source
+  const backdropImage = isMongoDBData
+    ? movie.titleImage
+    : `https://image.tmdb.org/t/p/original${movie.backdrop_path}`;
+
+  const posterImage = isMongoDBData
+    ? movie.image
+    : `https://image.tmdb.org/t/p/original${movie.poster_path}`;
+
+  const movieTitle = isMongoDBData ? movie.name : movie.title;
+  const movieDescription = isMongoDBData ? movie.desc : movie.overview;
+  const movieLanguage = isMongoDBData ? movie.language : movie.original_language?.toUpperCase();
+  const movieId = isMongoDBData ? movie._id : movie.id;
 
   return (
     <div className="w-full xl:h-screen relative text-white">
       {/* Background Image */}
-      {movie.backdrop_path && (
+      {backdropImage && (
         <img
-          src={`${BASE_IMAGE_URL}${movie.backdrop_path}`}
-          alt={movie.title}
+          src={backdropImage}
+          alt={movieTitle}
           className="w-full hidden xl:inline-block h-full object-cover"
+          onError={(e) => {
+            e.target.style.display = 'none';
+          }}
         />
       )}
 
@@ -60,11 +78,14 @@ function MovieInfo({ movie, setModalOpen }) {
         <div className="container mx-auto px-3 2xl:px-32 xl:grid grid-cols-3 gap-8 py-10 lg:py-20">
           {/* Thumbnail */}
           <div className="xl:col-span-1 h-header bg-dry border border-gray-800 rounded-lg overflow-hidden xl:order-none order-last">
-            {movie.poster_path ? (
+            {posterImage ? (
               <img
-                src={`${BASE_IMAGE_URL}${movie.poster_path}`}
-                alt={movie.title}
+                src={posterImage}
+                alt={movieTitle}
                 className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.target.src = "/public/default-avatar.png";
+                }}
               />
             ) : (
               <div className="w-full h-full bg-gray-700 flex items-center justify-center text-sm text-white">
@@ -78,7 +99,7 @@ function MovieInfo({ movie, setModalOpen }) {
             <div className="md:col-span-3 flex flex-col gap-8">
               {/* Title */}
               <h1 className="text-2xl xl:text-4xl font-bold capitalize">
-                {movie.title || movie.name}
+                {movieTitle}
               </h1>
 
               {/* Tags */}
@@ -89,7 +110,7 @@ function MovieInfo({ movie, setModalOpen }) {
 
               {/* Description */}
               <p className="text-sm text-text leading-7">
-                {movie.overview || "No description available."}
+                {movieDescription || "No description available."}
               </p>
 
               {/* Detail Section: Share, Language, Watch */}
@@ -108,21 +129,21 @@ function MovieInfo({ movie, setModalOpen }) {
                 <div className="col-span-2 flex-colo text-sm font-medium text-white">
                   <p>
                     Language: {" "}
-                    <span className="ml-2">{movie.original_language?.toUpperCase()}</span>
+                    <span className="ml-2">{movieLanguage || 'EN'}</span>
                   </p>
                 </div>
 
                 {/* Watch Now */}
                 <div className="sm:col-span-2 col-span-3 flex justify-end gap-2">
                   <Link
-                    to={`/watch/${movie.id}?type=movie`}
+                    to={`/watch/${movieId}?type=movie`}
                     className="w-full py-3 sm:py-3 flex items-center justify-center gap-4 rounded-full bg-dry border-2 border-subMain hover:bg-subMain transition"
                   >
                     <FaPlay className="w-3 h-3" />
                     <span className="text-sm font-medium uppercase">Watch</span>
                   </Link>
                   <Link
-                    to={`/watch/${movie.id}?type=trailer`}
+                    to={`/watch/${movieId}?type=trailer`}
                     className="w-full py-3 sm:py-3 flex items-center justify-center gap-4 rounded-full bg-white bg-opacity-20 hover:bg-white hover:text-main transition"
                   >
                     <FaPlay className="w-3 h-3" />

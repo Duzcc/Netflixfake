@@ -14,8 +14,6 @@ import { protect, admin } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// ==================== USER ROUTES ====================
-
 // Get user's notifications
 router.get('/', protect, getUserNotifications);
 

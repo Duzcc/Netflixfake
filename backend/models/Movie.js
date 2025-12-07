@@ -91,6 +91,20 @@ const movieSchema = mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User',
         },
+        // TMDb Integration Fields
+        tmdbId: {
+            type: Number,
+            unique: true,
+            sparse: true, // Allows null for manually added movies
+        },
+        importSource: {
+            type: String,
+            enum: ['manual', 'tmdb'],
+            default: 'manual',
+        },
+        lastSyncedAt: {
+            type: Date,
+        },
     },
     {
         timestamps: true,
@@ -121,6 +135,10 @@ movieSchema.index({ category: 1, rate: -1 });
 
 // User's movies index
 movieSchema.index({ userId: 1, createdAt: -1 });
+
+// TMDb tracking indexes
+movieSchema.index({ tmdbId: 1 });
+movieSchema.index({ importSource: 1, createdAt: -1 });
 
 const Movie = mongoose.model('Movie', movieSchema);
 

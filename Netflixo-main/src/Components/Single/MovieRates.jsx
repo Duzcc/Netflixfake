@@ -9,18 +9,21 @@ function MovieRates({ movie }) {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  // Get correct ID (MongoDB uses _id, TMDb uses id)
+  const movieId = movie?._id || movie?.id;
+
   const fetchReviews = async () => {
-    if (!movie?.id) return;
+    if (!movieId) return;
 
     setLoading(true);
     try {
-      const data = await getMovieReviews(movie.id);
+      const data = await getMovieReviews(movieId);
 
       // Get backend/fake reviews
       const backendReviews = data?.reviews || data?.results || [];
 
       // Get local reviews from localStorage
-      const localReviewsKey = `reviews_${movie.id}`;
+      const localReviewsKey = `reviews_${movieId}`;
       const localReviews = JSON.parse(localStorage.getItem(localReviewsKey) || '[]');
 
       // Merge local reviews with backend reviews (local reviews first)
@@ -28,10 +31,8 @@ function MovieRates({ movie }) {
 
       setReviews(allReviews);
     } catch (error) {
-      console.error("Failed to fetch reviews", error);
-
-      // On error, still show local reviews
-      const localReviewsKey = `reviews_${movie.id}`;
+      // Silently handle errors - just show local reviews
+      const localReviewsKey = `reviews_${movieId}`;
       const localReviews = JSON.parse(localStorage.getItem(localReviewsKey) || '[]');
       setReviews(localReviews);
     } finally {
@@ -41,7 +42,7 @@ function MovieRates({ movie }) {
 
   useEffect(() => {
     fetchReviews();
-  }, [movie?.id]);
+  }, [movieId]);
 
   const handleReviewSubmitted = () => {
     fetchReviews(); // Reload reviews after submission
@@ -54,9 +55,9 @@ function MovieRates({ movie }) {
       {/* Review Form */}
       <div className="mt-10">
         <ReviewForm
-          movieId={movie?.id}
-          movieTitle={movie?.title || movie?.name}
-          moviePoster={movie?.poster_path}
+          movieId={movieId}
+          movieTitle={movie?.name || movie?.title}
+          moviePoster={movie?.image || (movie?.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : null)}
           onReviewSubmitted={handleReviewSubmitted}
         />
       </div>

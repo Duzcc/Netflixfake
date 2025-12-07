@@ -24,8 +24,6 @@ const router = express.Router();
 // Apply sanitization
 router.use(sanitizeInput);
 
-// ==================== PUBLIC & USER ROUTES ====================
-
 // Create a review for a movie (user-only)
 router.post('/movies/:movieId/reviews', protect, userOnly, validateReview, createReview);
 

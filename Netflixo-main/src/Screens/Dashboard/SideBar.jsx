@@ -65,6 +65,12 @@ function SideBar({ children }) {
       isAdmin: true,
     },
     {
+      name: "TMDb Import",
+      link: "/tmdb-import",
+      icon: HiViewGridAdd,
+      isAdmin: true,
+    },
+    {
       name: "Dashboard",
       link: "/user-dashboard",
       icon: BsFillGridFill,

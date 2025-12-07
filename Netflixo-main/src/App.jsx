@@ -9,6 +9,7 @@ import Categories from './Screens/Dashboard/Admin/Categories';
 import Dashboard from './Screens/Dashboard/Admin/Dashboard';
 import MoviesList from './Screens/Dashboard/Admin/MovieList';
 import Users from './Screens/Dashboard/Admin/Users';
+import TMDbImport from './Screens/Dashboard/Admin/TMDbImport';
 import FavoritesMovies from './Screens/Dashboard/FavoritesMovies';
 import Password from './Screens/Dashboard/Password';
 import Profile from './Screens/Dashboard/Profile';
@@ -87,6 +88,7 @@ function App() {
               <Route path="/categories" element={<Categories />} />
               <Route path="/users" element={<Users />} />
               <Route path="/addmovie" element={<AddMovie />} />
+              <Route path="/tmdb-import" element={<TMDbImport />} />
             </Route>
           </Routes>
         </ErrorBoundary>

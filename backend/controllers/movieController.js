@@ -40,17 +40,66 @@ const getTopRatedMovies = asyncHandler(async (req, res) => {
     }
 });
 
-// @desc    Get movie details
+// @desc    Get movie details from local MongoDB (with TMDb fallback)
 // @route   GET /api/movies/:id
 // @access  Public
 const getMovieDetails = asyncHandler(async (req, res) => {
     const { id } = req.params;
+
     try {
-        const response = await axios.get(
-            getTmdbUrl(`/movie/${id}`, { append_to_response: 'credits,videos' })
-        );
-        res.json(response.data);
+        // Try to find by MongoDB _id first
+        let movie = await Movie.findById(id);
+
+        // If not found and id is numeric, try finding by tmdbId
+        if (!movie && !isNaN(id)) {
+            movie = await Movie.findOne({ tmdbId: parseInt(id) });
+        }
+
+        if (movie) {
+            return res.json(movie);
+        }
+
+        // If not found in MongoDB and ID is numeric, fallback to TMDb API
+        if (!isNaN(id)) {
+            try {
+                const response = await axios.get(
+                    getTmdbUrl(`/movie/${id}`, { append_to_response: 'credits,videos' })
+                );
+                // Return TMDb data with a flag indicating it's from TMDb
+                return res.json({
+                    ...response.data,
+                    _fromTMDb: true, // Flag for frontend to know
+                });
+            } catch (tmdbError) {
+                // TMDb also doesn't have it
+                res.status(404);
+                throw new Error('Movie not found in local database or TMDb');
+            }
+        }
+
+        res.status(404);
+        throw new Error('Movie not found in database');
     } catch (error) {
+        // If it's a CastError (invalid ObjectId format), try tmdbId then TMDb API
+        if (error.name === 'CastError' && !isNaN(id)) {
+            const movie = await Movie.findOne({ tmdbId: parseInt(id) });
+            if (movie) {
+                return res.json(movie);
+            }
+
+            // Last resort: Try TMDb API
+            try {
+                const response = await axios.get(
+                    getTmdbUrl(`/movie/${id}`, { append_to_response: 'credits,videos' })
+                );
+                return res.json({
+                    ...response.data,
+                    _fromTMDb: true,
+                });
+            } catch (tmdbError) {
+                // Give up
+            }
+        }
         res.status(404);
         throw new Error('Movie not found');
     }
@@ -115,18 +164,18 @@ const importMovie = asyncHandler(async (req, res) => {
     }
 
     try {
+        // Check if movie already exists by TMDb ID
+        const existingMovie = await Movie.findOne({ tmdbId });
+        if (existingMovie) {
+            res.status(400);
+            throw new Error(`Movie "${existingMovie.name}" (TMDb ID: ${tmdbId}) already exists in database`);
+        }
+
         // Fetch movie details from TMDb with credits
         const movieResponse = await axios.get(
             getTmdbUrl(`/movie/${tmdbId}`, { append_to_response: 'credits' })
         );
         const tmdbMovie = movieResponse.data;
-
-        // Check if movie already exists in our database
-        const existingMovie = await Movie.findOne({ name: tmdbMovie.title });
-        if (existingMovie) {
-            res.status(400);
-            throw new Error(`Movie "${tmdbMovie.title}" already exists in database`);
-        }
 
         // Extract and format movie data
         const movieData = {
@@ -145,6 +194,11 @@ const importMovie = asyncHandler(async (req, res) => {
             rate: tmdbMovie.vote_average || 0,
             numberOfReviews: tmdbMovie.vote_count || 0,
             userId: req.user._id,
+
+            // TMDb tracking fields
+            tmdbId: tmdbMovie.id,
+            importSource: 'tmdb',
+            lastSyncedAt: new Date(),
         };
 
         // Extract cast information (top 10 actors)
@@ -357,6 +411,23 @@ const deleteAllMovies = asyncHandler(async (req, res) => {
     res.json({ message: 'All movies removed successfully' });
 });
 
+// @desc    Get movie reviews
+// @route   GET /api/movies/:id/reviews
+// @access  Public
+const getMovieReviews = asyncHandler(async (req, res) => {
+    const movie = await Movie.findById(req.params.id).select('reviews numberOfReviews');
+
+    if (movie) {
+        res.json({
+            reviews: movie.reviews || [],
+            totalReviews: movie.numberOfReviews || 0,
+        });
+    } else {
+        res.status(404);
+        throw new Error('Movie not found');
+    }
+});
+
 // @desc    Create movie review
 // @route   POST /api/movies/:id/reviews
 // @access  Private
@@ -480,6 +551,7 @@ export {
     updateMovie,
     deleteMovie,
     deleteAllMovies,
+    getMovieReviews,
     createMovieReview,
     updateMovieReview,
     deleteMovieReview,

@@ -5,9 +5,6 @@ import WatchHistory from '../models/WatchHistory.js';
 import Watchlist from '../models/Watchlist.js';
 import Review from '../models/Review.js';
 
-// @desc    Get comprehensive dashboard analytics
-// @route   GET /api/analytics/dashboard
-// @access  Private/Admin
 const getDashboardStats = asyncHandler(async (req, res) => {
     const { startDate, endDate } = req.query;
 
@@ -86,9 +83,7 @@ const getDashboardStats = asyncHandler(async (req, res) => {
     });
 });
 
-// @desc    Get user engagement metrics
-// @route   GET /api/analytics/engagement
-// @access  Private/Admin
+
 const getUserEngagement = asyncHandler(async (req, res) => {
     const { period = '30' } = req.query;
 
@@ -153,9 +148,6 @@ const getUserEngagement = asyncHandler(async (req, res) => {
     });
 });
 
-// @desc    Get popular content
-// @route   GET /api/analytics/popular
-// @access  Private/Admin
 const getPopularContent = asyncHandler(async (req, res) => {
     const { limit = '10', period = '30' } = req.query;
 
@@ -215,9 +207,6 @@ const getPopularContent = asyncHandler(async (req, res) => {
     });
 });
 
-// @desc    Get watch time analytics
-// @route   GET /api/analytics/watch-time
-// @access  Private/Admin
 const getWatchTimeAnalytics = asyncHandler(async (req, res) => {
     const { period = '30', groupBy = 'day' } = req.query;
 
@@ -275,9 +264,6 @@ const getWatchTimeAnalytics = asyncHandler(async (req, res) => {
 // Legacy endpoint for backward compatibility
 const getAnalytics = getDashboardStats;
 
-// @desc    Get detailed user analytics
-// @route   GET /api/analytics/users
-// @access  Private/Admin
 const getUserAnalytics = asyncHandler(async (req, res) => {
     const { period = '30' } = req.query;
 
